@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARADIAG - Diagnostic Auto Intelligent</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+        
+        header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 40px 20px; 
+            text-align: center; 
+        }
+        
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .feature { 
+            background: white; 
+            padding: 30px; 
+            margin: 20px 0; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        .feature h2 { color: #667eea; margin-bottom: 15px; }
+        
+        .screenshot-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .screenshot {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .steps { list-style: none; }
+        .steps li { 
+            padding: 15px; 
+            margin: 10px 0; 
+            background: #f8f9fa; 
+            border-left: 4px solid #667eea; 
+            border-radius: 5px; 
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .hidden { display: none; }
+        
+        .locations {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .location-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .location-item:last-child {
+            border-bottom: none;
+        }
+        
+        .rapport {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .rapport-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .rapport-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .rapport-body {
+            padding: 30px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .error-code {
+            background: #fee;
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .error-code strong { color: #e74c3c; font-size: 1.2em; }
+        
+        .ok-code {
+            background: #efe;
+            border-left: 4px solid #2ecc71;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .recommendation {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        footer { 
+            background: #2c3e50; 
+            color: white; 
+            text-align: center; 
+            padding: 20px; 
+            margin-top: 40px; 
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>KARADIAG</h1>
+        <p>Diagnostic automobile intelligent et instantané</p>
+    </header>
+    
+    <div class="container">
+        <div class="screenshot-section">
+            <img src="LIEN_VERS_SCREENSHOT_PREMIERE_PAGE_KARADIAG" alt="Karadiag" class="screenshot">
+        </div>
+        
+        <div class="feature">
+            <h2>🔧 Comment ça marche ?</h2>
+            <ul class="steps">
+                <li><strong>1.</strong> Trouvez une borne Karadiag près de chez vous</li>
+                <li><strong>2.</strong> Branchez votre véhicule sur le port OBD2</li>
+                <li><strong>3.</strong> Le diagnostic démarre automatiquement</li>
+                <li><strong>4.</strong> Scannez le QR code pour recevoir votre rapport en ligne</li>
+            </ul>
+        </div>
+        
+        <div class="feature">
+            <h2>📍 Où trouver une borne KARADIAG ?</h2>
+            <p>Nos bornes sont disponibles dans plusieurs garages et stations partenaires.</p>
+            <button class="btn" onclick="toggleLocations()">📍 Voir les emplacements des bornes</button>
+            
+            <div id="locations" class="locations hidden">
+                <h3 style="margin-bottom: 15px; color: #667eea;">Bornes disponibles :</h3>
+                <div class="location-item">
+                    <strong>🔧 Garage AutoPlus - Paris 15e</strong>
+                    <p>45 Rue de Vaugirard, 75015 Paris</p>
+                </div>
+                <div class="location-item">
+                    <strong>🔧 Station TotalEnergies - Lyon</strong>
+                    <p>12 Avenue Jean Jaurès, 69007 Lyon</p>
+                </div>
+                <div class="location-item">
+                    <strong>🔧 Garage Dupont - Marseille</strong>
+                    <p>78 Boulevard Michelet, 13008 Marseille</p>
+                </div>
+                <p style="margin-top: 15px; font-style: italic; color: #888;">
+                    📧 Contactez-nous pour plus d'emplacements : contact@karadiag.com
+                </p>
+            </div>
+        </div>
+        
+        <div class="feature">
+            <h2>✅ Pourquoi KARADIAG ?</h2>
+            <ul class="steps">
+                <li>✓ Diagnostic instantané en moins de 2 minutes</li>
+                <li>✓ Rapport détaillé accessible en ligne via QR code</li>
+                <li>✓ Compatible avec tous les véhicules depuis 2001</li>
+                <li>✓ Tarifs transparents et accessibles</li>
+                <li>✓ Aucune prise de rendez-vous nécessaire</li>
+                <li>✓ Résultats immédiats et fiables</li>
+            </ul>
+        </div>
+        
+        <div class="feature">
+            <h2>📋 Votre rapport de diagnostic</h2>
+            <p>Après avoir scanné le QR code sur la borne, cliquez ci-dessous pour accéder à votre rapport détaillé.</p>
+            <button class="btn" onclick="showReport()">📄 Voir mon rapport détaillé</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 KARADIAG - Tous droits réservés</p>
+        <p>📧 Contacter KARADIAG : contact@karadiag.com</p>
+    </footer>
+    
+    <div id="reportPage" class="hidden">
+        <header>
+            <h1>KARADIAG</h1>
+        </header>
+        
+        <div class="container" style="margin-top: 30px;">
+            <div class="rapport">
+                <div class="rapport-header">
+                    <div class="rapport-title">📋 Voici votre rapport</div>
+                    <p style="margin-top: 10px; opacity: 0.9;">Conservez ce rapport pour le montrer à votre garagiste</p>
+                </div>
+                
+                <div class="rapport-body">
+                    <div class="info-row">
+                        <strong>ID Rapport:</strong>
+                        <span>KD20251117001</span>
+                    </div>
+                    <div class="info-row">
+                        <strong>Date:</strong>
+                        <span>17/11/2025 à 14:30</span>
+                    </div>
+                    <div class="info-row">
+                        <strong>VIN:</strong>
+                        <span>WBAXXXXXXXXXXXXXXX</span>
+                    </div>
+                    <div class="info-row">
+                        <strong>Marque/Modèle:</strong>
+                        <span>BMW Série 3</span>
+                    </div>
+                    
+                    <h2 style="margin-top: 30px; color: #667eea;">Résultats du diagnostic:</h2>
+                    
+                    <div class="error-code">
+                        <strong>❌ P0420 - Catalyseur inefficace (Banque 1)</strong>
+                        <p style="margin-top: 10px; color: #666;">
+                            Le rendement du catalyseur est en dessous du seuil acceptable. 
+                            Peut nécessiter un remplacement.
+                        </p>
+                        <p style="margin-top: 5px; color: #e74c3c;"><strong>Gravité: 🔴 Moyenne</strong></p>
+                    </div>
+                    
+                    <div class="error-code">
+                        <strong>❌ P0171 - Mélange trop pauvre</strong>
+                        <p style="margin-top: 10px; color: #666;">
+                            Le système détecte un mélange air/carburant trop pauvre. 
+                            Vérifier les fuites d'air et capteurs.
+                        </p>
+                        <p style="margin-top: 5px; color: #ffa500;"><strong>Gravité: 🟡 Faible</strong></p>
+                    </div>
+                    
+                    <div class="ok-code">
+                        ✅ Aucun autre défaut détecté
+                    </div>
+                    
+                    <div class="recommendation">
+                        <strong>⚠️ Recommandation:</strong>
+                        <p style="margin-top: 10px;">
+                            Nous vous conseillons de consulter rapidement un garagiste pour ces codes erreur. 
+                            Le catalyseur défaillant peut affecter les performances et augmenter la consommation.
+                        </p>
+                    </div>
+                    
+                    <p style="text-align: center; margin-top: 30px; color: #888; font-style: italic;">
+                        Rapport généré par KARADIAG - Borne n°001
+                    </p>
+                    
+                    <button class="btn" onclick="backToHome()" style="margin-top: 30px;">← Retour à l'accueil</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2025 KARADIAG - Tous droits réservés</p>
+            <p>📧 Contacter KARADIAG : contact@karadiag.com</p>
+        </footer>
+    </div>
+    
+    <script>
+        function toggleLocations() {
+            const locations = document.getElementById('locations');
+            locations.classList.toggle('hidden');
+        }
+        
+        function showReport() {
+            document.body.children[0].style.display = 'none';
+            document.body.children[1].style.display = 'none';
+            document.body.children[2].style.display = 'none';
+            document.getElementById('reportPage').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+        
+        function backToHome() {
+            document.body.children[0].style.display = 'block';
+            document.body.children[1].style.display = 'block';
+            document.body.children[2].style.display = 'block';
+            document.getElementById('reportPage').classList.add('hidden');
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>

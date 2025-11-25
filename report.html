@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport KARADIAG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+        .report-info {
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        .thank-you {
+            color: #00ff88;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .section {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #00d4ff;
+        }
+        .section h2 {
+            color: #00d4ff;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .error-card {
+            background: #0f3460;
+            border-left: 5px solid #ff4757;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .error-code {
+            color: #ff4757;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .error-desc {
+            color: #ccc;
+            font-size: 1em;
+        }
+        .cleared-card {
+            background: #0f3460;
+            border-left: 5px solid #00ff88;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .cleared-code {
+            color: #00ff88;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .mileage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .mileage-card {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00d4ff;
+        }
+        .mileage-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .mileage-value {
+            color: #00d4ff;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .coherence {
+            background: #0f3460;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #00ff88;
+        }
+        .coherence h3 {
+            color: #00ff88;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        .coherence p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        .btn-menu {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-menu:hover {
+            transform: scale(1.05);
+        }
+        .warning {
+            background: #1e3a8a;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .warning p {
+            color: #ff0000;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 2px solid #0f3460;
+        }
+        .footer p {
+            color: #666;
+            font-size: 0.95em;
+            margin: 8px 0;
+        }
+        .footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .mileage-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Diagnostic terminé</h1>
+            <p class="report-info">📅 23 novembre 2025 - 14:35</p>
+            <p class="report-info">Rapport #12345</p>
+            <p class="thank-you">🚗 KARADIAG vous remercie</p>
+        </div>
+
+        <!-- SECTION 1: CODES DÉFAUTS DÉTECTÉS -->
+        <div class="section">
+            <h2>🔍 Codes erreurs détectés:</h2>
+            <div class="error-card">
+                <div class="error-code">P0301</div>
+                <div class="error-desc">Code d'erreur détecté</div>
+            </div>
+            <div class="error-card">
+                <div class="error-code">P0420</div>
+                <div class="error-desc">Code d'erreur détecté</div>
+            </div>
+            <div class="error-card">
+                <div class="error-code">P0171</div>
+                <div class="error-desc">Code d'erreur détecté</div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: CODES EFFACÉS -->
+        <div class="section">
+            <h2>✓ Effacement effectué</h2>
+            <p style="color: #ccc; margin-bottom: 15px;">Les codes défauts ont été effacés avec succès de la mémoire du calculateur.</p>
+            <div class="cleared-card">
+                <div class="cleared-code">✓ P0301 effacé</div>
+            </div>
+            <div class="cleared-card">
+                <div class="cleared-code">✓ P0420 effacé</div>
+            </div>
+            <div class="cleared-card">
+                <div class="cleared-code">✓ P0171 effacé</div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: VÉRIFICATION KILOMÉTRIQUE -->
+        <div class="section">
+            <h2>📊 Vérification kilométrique</h2>
+            <div class="mileage-grid">
+                <div class="mileage-card">
+                    <div class="mileage-label">🎛️ Compteur tableau de bord</div>
+                    <div class="mileage-value">125,450 km</div>
+                </div>
+                <div class="mileage-card">
+                    <div class="mileage-label">⚙️ ECU Moteur</div>
+                    <div class="mileage-value">125,450 km</div>
+                </div>
+                <div class="mileage-card">
+                    <div class="mileage-label">🔄 ECU Transmission</div>
+                    <div class="mileage-value">125,450 km</div>
+                </div>
+                <div class="mileage-card">
+                    <div class="mileage-label">🛑 ECU ABS</div>
+                    <div class="mileage-value">125,450 km</div>
+                </div>
+            </div>
+            
+            <div class="coherence">
+                <h3>✓ Kilométrage cohérent</h3>
+                <p>Tous les calculateurs affichent un kilométrage identique. Le compteur n'a pas été trafiqué.</p>
+            </div>
+        </div>
+
+        <!-- BOUTON RETOUR -->
+        <a href="https://karadiag.com" class="btn-menu">🏠 Retour au menu</a>
+
+        <!-- AVERTISSEMENT -->
+        <div class="warning">
+            <p>⚠️ Faites vérifier par un vrai garagiste.</p>
+            <p>Vos défauts peuvent réapparaître. Ce diagnostic est indicatif et ne remplace pas une expertise professionnelle.</p>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>© 2025 KARADIAG - Tous droits réservés</p>
+            <p>Contact: <a href="mailto:contact@karadiag.com">contact@karadiag.com</a></p>
+        </div>
+    </div>
+</body>
+</html>
