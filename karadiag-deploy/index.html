@@ -94,64 +94,6 @@
             border-bottom: none;
         }
         
-        .rapport {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .rapport-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .rapport-title {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        
-        .rapport-body {
-            padding: 30px;
-        }
-        
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .error-code {
-            background: #fee;
-            border-left: 4px solid #e74c3c;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 5px;
-        }
-        
-        .error-code strong { color: #e74c3c; font-size: 1.2em; }
-        
-        .ok-code {
-            background: #efe;
-            border-left: 4px solid #2ecc71;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 5px;
-            color: #2ecc71;
-            font-weight: bold;
-        }
-        
-        .recommendation {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        
         footer { 
             background: #2c3e50; 
             color: white; 
@@ -222,7 +164,7 @@
         <div class="feature">
             <h2>📋 Votre rapport de diagnostic</h2>
             <p>Après avoir scanné le QR code sur la borne, cliquez ci-dessous pour accéder à votre rapport détaillé.</p>
-            <button class="btn" onclick="showReport()">📄 Voir mon rapport détaillé</button>
+            <button class="btn" onclick="window.location.href='report.html'">📄 Voir mon rapport détaillé</button>
         </div>
     </div>
     
@@ -231,103 +173,10 @@
         <p>📧 Contacter KARADIAG : contact@karadiag.com</p>
     </footer>
     
-    <div id="reportPage" class="hidden">
-        <header>
-            <h1>KARADIAG</h1>
-        </header>
-        
-        <div class="container" style="margin-top: 30px;">
-            <div class="rapport">
-                <div class="rapport-header">
-                    <div class="rapport-title">📋 Voici votre rapport</div>
-                    <p style="margin-top: 10px; opacity: 0.9;">Conservez ce rapport pour le montrer à votre garagiste</p>
-                </div>
-                
-                <div class="rapport-body">
-                    <div class="info-row">
-                        <strong>ID Rapport:</strong>
-                        <span>KD20251117001</span>
-                    </div>
-                    <div class="info-row">
-                        <strong>Date:</strong>
-                        <span>17/11/2025 à 14:30</span>
-                    </div>
-                    <div class="info-row">
-                        <strong>VIN:</strong>
-                        <span>WBAXXXXXXXXXXXXXXX</span>
-                    </div>
-                    <div class="info-row">
-                        <strong>Marque/Modèle:</strong>
-                        <span>BMW Série 3</span>
-                    </div>
-                    
-                    <h2 style="margin-top: 30px; color: #667eea;">Résultats du diagnostic:</h2>
-                    
-                    <div class="error-code">
-                        <strong>❌ P0420 - Catalyseur inefficace (Banque 1)</strong>
-                        <p style="margin-top: 10px; color: #666;">
-                            Le rendement du catalyseur est en dessous du seuil acceptable. 
-                            Peut nécessiter un remplacement.
-                        </p>
-                        <p style="margin-top: 5px; color: #e74c3c;"><strong>Gravité: 🔴 Moyenne</strong></p>
-                    </div>
-                    
-                    <div class="error-code">
-                        <strong>❌ P0171 - Mélange trop pauvre</strong>
-                        <p style="margin-top: 10px; color: #666;">
-                            Le système détecte un mélange air/carburant trop pauvre. 
-                            Vérifier les fuites d'air et capteurs.
-                        </p>
-                        <p style="margin-top: 5px; color: #ffa500;"><strong>Gravité: 🟡 Faible</strong></p>
-                    </div>
-                    
-                    <div class="ok-code">
-                        ✅ Aucun autre défaut détecté
-                    </div>
-                    
-                    <div class="recommendation">
-                        <strong>⚠️ Recommandation:</strong>
-                        <p style="margin-top: 10px;">
-                            Nous vous conseillons de consulter rapidement un garagiste pour ces codes erreur. 
-                            Le catalyseur défaillant peut affecter les performances et augmenter la consommation.
-                        </p>
-                    </div>
-                    
-                    <p style="text-align: center; margin-top: 30px; color: #888; font-style: italic;">
-                        Rapport généré par KARADIAG - Borne n°001
-                    </p>
-                    
-                    <button class="btn" onclick="backToHome()" style="margin-top: 30px;">← Retour à l'accueil</button>
-                </div>
-            </div>
-        </div>
-        
-        <footer>
-            <p>&copy; 2025 KARADIAG - Tous droits réservés</p>
-            <p>📧 Contacter KARADIAG : contact@karadiag.com</p>
-        </footer>
-    </div>
-    
     <script>
         function toggleLocations() {
             const locations = document.getElementById('locations');
             locations.classList.toggle('hidden');
-        }
-        
-        function showReport() {
-            document.body.children[0].style.display = 'none';
-            document.body.children[1].style.display = 'none';
-            document.body.children[2].style.display = 'none';
-            document.getElementById('reportPage').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-        
-        function backToHome() {
-            document.body.children[0].style.display = 'block';
-            document.body.children[1].style.display = 'block';
-            document.body.children[2].style.display = 'block';
-            document.getElementById('reportPage').classList.add('hidden');
-            window.scrollTo(0, 0);
         }
     </script>
 </body>
