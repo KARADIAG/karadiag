@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport de Diagnostic - KaraDiag</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        h1 { color: #00d4ff; }
+        .code { background: #ff6b6b; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .info { background: rgba(0,212,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; }
+        button {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Rapport de Diagnostic</h1>
+        <div id="report-content">Chargement...</div>
+        <button onclick="window.print()">🖨️ Imprimer</button>
+        <button onclick="downloadPDF()">📄 Télécharger PDF</button>
+    </div>
+
+    <script>
+        // Récupérer les données depuis le hash (#)
+        const hash = window.location.hash.substring(1);
+        
+        if (hash) {
+            try {
+                // Décoder les données base64
+                const jsonStr = atob(hash.replace(/-/g, '+').replace(/_/g, '/'));
+                const data = JSON.parse(jsonStr);
+                
+                // Afficher le rapport
+                displayReport(data);
+            } catch (e) {
+                document.getElementById('report-content').innerHTML = 
+                    '<p style="color: #ff6b6b;">❌ Erreur de chargement du rapport</p>';
+            }
+        } else {
+            document.getElementById('report-content').innerHTML = 
+                '<p style="color: #ff6b6b;">❌ Aucune donnée trouvée</p>';
+        }
+
+        function displayReport(data) {
+            let html = `
+                <div class="info">
+                    <p><strong>Date :</strong> ${data.horodatage || 'N/A'}</p>
+                    <p><strong>Immatriculation :</strong> ${data.immatriculation || 'N/A'}</p>
+                    <p><strong>Mode :</strong> ${data.mode || 'N/A'}</p>
+                </div>
+            `;
+
+            // Codes défauts
+            if (data.codes && data.codes.length > 0) {
+                html += '<h2>🔴 Codes Défauts</h2>';
+                data.codes.forEach(code => {
+                    html += `<div class="code">${code}</div>`;
+                });
+            } else {
+                html += '<p style="color: #00d4ff;">✅ Aucun code défaut</p>';
+            }
+
+            // Kilométrage
+            html += `
+                <div class="info">
+                    <h2>📊 Kilométrage</h2>
+                    <p><strong>ABS :</strong> ${data.mileage_abs || 'N/A'} km</p>
+                    <p><strong>Tableau de bord :</strong> ${data.mileage_dashboard || 'N/A'} km</p>
+                    <p><strong>Moteur :</strong> ${data.mileage_engine || 'N/A'} km</p>
+                    <p><strong>Transmission :</strong> ${data.mileage_transmission || 'N/A'}</p>
+                    <p><strong>Note :</strong> ${data.mileage_note || 'N/A'}</p>
+                    <p><strong>Statut :</strong> <span style="color: ${data.status_color || '#00d4ff'}">${data.mileage_status || 'N/A'}</span></p>
+                </div>
+            `;
+
+            document.getElementById('report-content').innerHTML = html;
+        }
+
+        function downloadPDF() {
+            alert('Fonction PDF en cours de développement');
+        }
+    </script>
+</body>
+</html>
