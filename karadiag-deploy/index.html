@@ -1,0 +1,43 @@
+<script>
+    // Récupérer l'ID depuis le path /rapport/xxxxx
+    const urlPath = window.location.pathname;
+    const sessionId = urlPath.split('/').filter(part => part).pop();
+    
+    // Charger depuis le Raspberry Pi
+    fetch(`http://192.168.1.25:5001/get_report/${sessionId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('content').innerHTML = `
+                    <div class="error-message">
+                        <h2>❌ Rapport non trouvé</h2>
+                        <p>ID: ${sessionId}</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('content').innerHTML = `
+                    <div class="info-card">
+                        <h2>📊 Diagnostic</h2>
+                        <div class="info-row"><strong>Mode:</strong> ${data.mode}</div>
+                        <div class="info-row"><strong>Codes:</strong> ${data.codes}</div>
+                        <div class="info-row"><strong>Kilométrage moteur:</strong> ${data.mileage_engine}</div>
+                        <div class="info-row"><strong>Kilométrage transmission:</strong> ${data.mileage_transmission}</div>
+                        <div class="info-row"><strong>Kilométrage ABS:</strong> ${data.mileage_abs}</div>
+                        <div class="info-row"><strong>Kilométrage tableau de bord:</strong> ${data.mileage_dashboard}</div>
+                    </div>
+                    <div style="background: ${data.status_color}; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <strong>${data.mileage_status}</strong>
+                        <p>${data.mileage_note}</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('content').innerHTML = `
+                <div class="error-message">
+                    <h2>❌ Erreur de connexion</h2>
+                    <p>Impossible de charger le rapport</p>
+                </div>
+            `;
+        });
+</script>
