@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport KARADIAG</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        h1 { color: #00d4ff; text-align: center; }
+        h2 { color: #00d4ff; margin-top: 30px; }
+        .code { background: #ff6b6b; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .info { background: rgba(0,212,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; }
+        button {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Rapport KARADIAG</h1>
+        <div id="report-content">⏳ Chargement...</div>
+        <button onclick="window.print()">🖨️ Imprimer</button>
+    </div>
+
+    <script>
+        const hash = window.location.hash.substring(1);
+        
+        if (!hash) {
+            document.getElementById('report-content').innerHTML = 
+                '<p style="color: #ff6b6b; text-align: center;">❌ Aucune donnée</p>';
+        } else {
+            try {
+                const jsonStr = atob(hash.replace(/-/g, '+').replace(/_/g, '/'));
+                const data = JSON.parse(jsonStr);
+                displayReport(data);
+            } catch (e) {
+                document.getElementById('report-content').innerHTML = 
+                    '<p style="color: #ff6b6b;">❌ Erreur de chargement</p>';
+            }
+        }
+
+        function displayReport(data) {
+            let html = `
+                <div class="info">
+                    <p><strong>📅 Date :</strong> ${data.horodatage || 'N/A'}</p>
+                    <p><strong>🚗 Immatriculation :</strong> ${data.immatriculation || 'N/A'}</p>
+                    <p><strong>⚙️ Mode :</strong> ${data.mode || 'N/A'}</p>
+                </div>
+            `;
+
+            if (data.codes) {
+                const codesArray = Array.isArray(data.codes) 
+                    ? data.codes 
+                    : data.codes.split(',').map(c => c.trim()).filter(c => c);
+                
+                if (codesArray.length > 0) {
+                    html += '<h2>🔴 Codes Défauts</h2>';
+                    codesArray.forEach(code => {
+                        html += `<div class="code">${code}</div>`;
+                    });
+                } else {
+                    html += '<p style="color: #00d4ff;">✅ Aucun code défaut</p>';
+                }
+            }
+
+            html += `
+                <div class="info">
+                    <h2>📊 Kilométrage</h2>
+                    <p><strong>🛑 ABS :</strong> ${data.mileage_abs || 'N/A'} km</p>
+                    <p><strong>🎛️ Tableau de bord :</strong> ${data.mileage_dashboard || 'N/A'} km</p>
+                    <p><strong>⚙️ Moteur :</strong> ${data.mileage_engine || 'N/A'} km</p>
+                    <p><strong>🔄 Transmission :</strong> ${data.mileage_transmission || 'N/A'}</p>
+                    <p><strong>📝 Note :</strong> ${data.mileage_note || 'N/A'}</p>
+                    <p><strong>✓ Statut :</strong> <span style="color: ${data.status_color || '#00d4ff'}">${data.mileage_status || 'N/A'}</span></p>
+                </div>
+            `;
+
+            document.getElementById('report-content').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
