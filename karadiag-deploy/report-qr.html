@@ -26,6 +26,24 @@
             color: #aaa;
             font-size: 1.1em;
         }
+        .date-info {
+            text-align: center;
+            margin: 15px 0 20px 0;
+            padding: 12px;
+            background: rgba(0,212,255,0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+        .date-info .date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+        .date-info .immat {
+            font-size: 0.95em;
+            color: #aaa;
+        }
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -112,7 +130,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🚗 KARADIAG</h1>
+        <h1>KARADIAG</h1>
         <p>Voici votre rapport</p>
     </div>
     
@@ -124,7 +142,7 @@
         </button>
         
         <div class="footer">
-            Faites contrôler votre véhicule par un vrai professionnel
+            Faites contrôler votre véhicule par un garagiste. Ce diagnostic est indicatif.
         </div>
     </div>
 
@@ -148,17 +166,10 @@
         function displayReport(data) {
             let html = '';
 
-            // Section Informations (Date et Immatriculation)
-            html += '<div class="section">';
-            html += '<div class="section-title">📅 Informations</div>';
-            html += '<div class="mileage-item">';
-            html += '<span>📆 Date</span>';
-            html += '<span><strong>' + (data.horodatage || 'N/A') + '</strong></span>';
-            html += '</div>';
-            html += '<div class="mileage-item">';
-            html += '<span>🚗 Immatriculation</span>';
-            html += '<span><strong>' + (data.immatriculation || 'N/A') + '</strong></span>';
-            html += '</div>';
+            // Date et Immatriculation en haut
+            html += '<div class="date-info">';
+            html += '<div class="date">📅 ' + (data.horodatage || 'N/A') + '</div>';
+            html += '<div class="immat">🚗 ' + (data.immatriculation || 'N/A') + '</div>';
             html += '</div>';
 
             // Section Codes Défauts
