@@ -72,12 +72,22 @@
                 </div>
             `;
 
-            // Codes défauts
-            if (data.codes && data.codes.length > 0) {
+            // Codes défauts - gérer string OU array
+            if (data.codes) {
                 html += '<h2>🔴 Codes Défauts</h2>';
-                data.codes.forEach(code => {
-                    html += `<div class="code">${code}</div>`;
-                });
+                
+                // Convertir en array si c'est une string
+                const codesArray = Array.isArray(data.codes) 
+                    ? data.codes 
+                    : data.codes.split(',').map(c => c.trim()).filter(c => c);
+                
+                if (codesArray.length > 0) {
+                    codesArray.forEach(code => {
+                        html += `<div class="code">${code}</div>`;
+                    });
+                } else {
+                    html += '<p style="color: #00d4ff;">✅ Aucun code défaut</p>';
+                }
             } else {
                 html += '<p style="color: #00d4ff;">✅ Aucun code défaut</p>';
             }
