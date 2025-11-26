@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport KARADIAG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #00d4ff;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: #aaa;
+            font-size: 1.1em;
+        }
+        .date-info {
+            text-align: center;
+            margin: 15px 0 20px 0;
+            padding: 12px;
+            background: rgba(0,212,255,0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+        .date-info .date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(30, 40, 60, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            border: 2px solid #00d4ff;
+        }
+        .section {
+            background: rgba(0,212,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00d4ff;
+        }
+        .section-title {
+            color: #00d4ff;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .code {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .status-ok {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #001a0a;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .status-warning {
+            background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .mileage-item {
+            background: rgba(0,212,255,0.15);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0,212,255,0.3);
+            color: #888;
+            font-size: 0.85em;
+        }
+        .btn-home {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,212,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>KARADIAG</h1>
+        <p>Voici votre rapport</p>
+    </div>
+    
+    <div class="container">
+        <div id="report-content">⏳ Chargement...</div>
+        
+        <button onclick="window.location.href='https://karadiag.com'" class="btn-home">
+            🏠 Retour au menu
+        </button>
+        
+        <div class="footer">
+            Faites contrôler votre véhicule par un garagiste. Ce diagnostic est indicatif.
+        </div>
+    </div>
+
+    <script>
+        const hash = window.location.hash.substring(1);
+        
+        if (!hash) {
+            document.getElementById('report-content').innerHTML = 
+                '<p style="color: #ff6b6b; text-align: center;">❌ Aucune donnée</p>';
+        } else {
+            try {
+                const jsonStr = atob(hash.replace(/-/g, '+').replace(/_/g, '/'));
+                const data = JSON.parse(jsonStr);
+                displayReport(data);
+            } catch (e) {
+                document.getElementById('report-content').innerHTML = 
+                    '<p style="color: #ff6b6b; text-align: center;">❌ Erreur: ' + e.message + '</p>';
+            }
+        }
+
+        function displayReport(data) {
+            let html = '';
+
+            // Date et Immatriculation en haut
+            html += '<div class="date-info">';
+            html += '<div class="date">📅 ' + (data.horodatage || 'N/A') + '</div>';
+            html += '</div>';
+
+            // Section Codes Défauts
+            html += '<div class="section">';
+            html += '<div class="section-title">🔴 Codes Défauts</div>';
+            
+            if (data.codes) {
+                const codesArray = Array.isArray(data.codes) 
+                    ? data.codes 
+                    : data.codes.split(',').map(c => c.trim()).filter(c => c);
+                
+                if (codesArray.length > 0) {
+                    codesArray.forEach(code => {
+                        html += '<div class="code">' + code + '</div>';
+                    });
+                } else {
+                    html += '<div class="status-ok">✅ Aucun code défaut détecté</div>';
+                }
+            }
+            html += '</div>';
+
+            // Section Effacement
+            html += '<div class="section">';
+            html += '<div class="section-title">🔧 Effacement</div>';
+            html += '<div class="status-ok">✅ Effacement réussi</div>';
+            html += '</div>';
+
+            // Section Kilométrage
+            html += '<div class="section">';
+            html += '<div class="section-title">📊 Contrôle Kilométrage</div>';
+            
+            html += '<div class="mileage-item">';
+            html += '<span>🛑 ABS</span>';
+            html += '<span><strong>' + (data.mileage_abs || 'N/A') + '</strong></span>';
+            html += '</div>';
+            
+            html += '<div class="mileage-item">';
+            html += '<span>🎛️ Tableau de bord</span>';
+            html += '<span><strong>' + (data.mileage_dashboard || 'N/A') + '</strong></span>';
+            html += '</div>';
+            
+            html += '<div class="mileage-item">';
+            html += '<span>⚙️ Moteur</span>';
+            html += '<span><strong>' + (data.mileage_engine || 'N/A') + '</strong></span>';
+            html += '</div>';
+            
+            html += '<div class="mileage-item">';
+            html += '<span>🔄 Transmission</span>';
+            html += '<span><strong>' + (data.mileage_transmission || 'N/A') + '</strong></span>';
+            html += '</div>';
+
+            // Statut cohérence
+            const statusText = data.mileage_status || '✓ Cohérent';
+            const cssClass = statusText.includes('Cohérent') || statusText.includes('✓') ? 'status-ok' : 'status-warning';
+            
+            html += '<div class="' + cssClass + '" style="margin-top: 15px;">' + statusText + '</div>';
+            html += '</div>';
+
+            document.getElementById('report-content').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
