@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARADIAG - Diagnostic OBD Professionnel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1d3a 0%, #0f1123 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 700;
+            color: #00d9ff;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .flags {
+            margin-top: 10px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            color: #8b91a7;
+            font-size: 14px;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .pricing-card {
+            background: rgba(30, 35, 60, 0.6);
+            border: 2px solid #00d9ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .pricing-card:hover::before {
+            left: 100%;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+            border-color: #00ff88;
+        }
+
+        .pricing-card.premium {
+            border-color: #00ff88;
+            background: rgba(30, 35, 60, 0.8);
+        }
+
+        .card-title {
+            color: #00d9ff;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .card-price {
+            color: #00ff88;
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            color: #c5cae9;
+        }
+
+        .feature::before {
+            content: '✓';
+            color: #00ff88;
+            font-weight: 700;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .obd-image {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 15px;
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .connection-box {
+            background: rgba(30, 35, 60, 0.8);
+            border: 2px dashed #00d9ff;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .plug-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .connection-title {
+            font-size: 28px;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .instructions {
+            background: rgba(0, 217, 255, 0.1);
+            border-left: 4px solid #00d9ff;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        .instructions h3 {
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+            color: #c5cae9;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        .scanner-box {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 120px;
+            height: 120px;
+            border: 8px solid rgba(0, 217, 255, 0.2);
+            border-top: 8px solid #00d9ff;
+            border-radius: 50%;
+            margin: 30px auto;
+            animation: spin 1s linear infinite;
+        }
+
+        .scan-text {
+            font-size: 24px;
+            color: #00d9ff;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            background: rgba(30, 35, 60, 0.8);
+            border-radius: 10px;
+            height: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            height: 100%;
+            width: 0%;
+            animation: progress 3s ease-in-out forwards;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.8);
+        }
+
+        .result-header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .result-header h2 {
+            color: #00ff88;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .error-code {
+            background: rgba(255, 82, 82, 0.1);
+            border-left: 4px solid #ff5252;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .error-code h4 {
+            color: #ff5252;
+            margin-bottom: 5px;
+        }
+
+        .success-box {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .success-box h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .qr-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px auto;
+            width: fit-content;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00d9ff, #00ff88);
+            color: #1a1d3a;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin: 20px auto;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 82, 82, 0.8);
+            color: #fff;
+        }
+
+        .km-info {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .km-info p {
+            margin: 8px 0;
+            color: #c5cae9;
+        }
+
+        .km-info strong {
+            color: #00d9ff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">KARADIAG</div>
+            <div class="flags">🇫🇷 🇬🇧 🇩🇪</div>
+            <div class="subtitle">Diagnostic Professionnel</div>
+        </div>
+
+        <!-- Page 1: Sélection -->
+        <div class="page active" id="page1">
+            <h2 style="text-align: center; margin: 30px 0; color: #00d9ff;">Choisissez votre formule</h2>
+            
+            <div class="pricing-card" onclick="selectPlan('basique')">
+                <div class="card-title">BASIQUE</div>
+                <div class="card-price">10€</div>
+                <div class="feature">Lecture codes défauts</div>
+                <div class="feature">Liste des erreurs</div>
+            </div>
+
+            <div class="pricing-card" onclick="selectPlan('complet')">
+                <div class="card-title">COMPLET</div>
+                <div class="card-price">15€</div>
+                <div class="feature">Lecture codes défauts</div>
+                <div class="feature">Liste des erreurs</div>
+                <div class="feature">Effacement codes défauts</div>
+            </div>
+
+            <div class="pricing-card premium" onclick="selectPlan('premium')">
+                <div class="card-title">PREMIUM ⭐</div>
+                <div class="card-price">20€</div>
+                <div class="feature">Lecture codes défauts</div>
+                <div class="feature">Liste des erreurs</div>
+                <div class="feature">Effacement codes défauts</div>
+                <div class="feature">Vérification kilométrique</div>
+            </div>
+        </div>
+
+        <!-- Page 2: Photo OBD -->
+        <div class="page" id="page2">
+            <div class="connection-box">
+                <img src="obd-photo.jpg" alt="Connexion OBD" class="obd-image">
+                <p style="text-align: center; color: #00d9ff; font-size: 20px; margin: 20px 0;">Branchez votre câble OBD</p>
+                <button class="btn" onclick="showPage(3)">✓ C'EST BRANCHÉ, CONTINUER</button>
+            </div>
+        </div>
+
+        <!-- Page 3: Connexion OBD -->
+        <div class="page" id="page3">
+            <div class="connection-box">
+                <div class="plug-icon">🔌</div>
+                <div class="connection-title">Connexion au véhicule</div>
+                
+                <div class="instructions">
+                    <h3>📋 Instructions:</h3>
+                    <ol>
+                        <li>Localisez la prise OBD de votre véhicule (sous le volant)</li>
+                        <li>Branchez fermement le câble OBD</li>
+                        <li>Mettez le contact de votre véhicule (sans démarrer)</li>
+                        <li>Patientez quelques secondes</li>
+                    </ol>
+                </div>
+
+                <button class="btn" onclick="startScan()">🚀 LANCER LE DIAGNOSTIC</button>
+            </div>
+        </div>
+
+        <!-- Page 4: Scan -->
+        <div class="page" id="page4">
+            <div class="scanner-box">
+                <div class="spinner"></div>
+                <div class="scan-text">Diagnostic en cours...</div>
+                <p style="color: #8b91a7; margin: 20px 0;">Analyse de votre véhicule</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <p style="color: #00d9ff; margin-top: 20px;" id="scanStatus">Connexion établie...</p>
+            </div>
+        </div>
+
+        <!-- Page 5: Résultats -->
+        <div class="page" id="page5">
+            <div class="result-header">
+                <h2>✅ Diagnostic terminé</h2>
+                <p style="color: #8b91a7;">Votre rapport est prêt</p>
+            </div>
+
+            <h3 style="color: #00d9ff; margin: 20px 0;">Codes erreurs détectés:</h3>
+            
+            <div class="error-code">
+                <h4>P0301</h4>
+                <p style="color: #c5cae9;">Raté d'allumage cylindre 1 détecté</p>
+            </div>
+
+            <div class="error-code">
+                <h4>P0420</h4>
+                <p style="color: #c5cae9;">Efficacité du catalyseur sous le seuil</p>
+            </div>
+
+            <div class="error-code">
+                <h4>P0171</h4>
+                <p style="color: #c5cae9;">Mélange trop pauvre (banque 1)</p>
+            </div>
+
+            <div class="success-box">
+                <h3>✓ Effacement effectué</h3>
+                <p style="color: #c5cae9;">Les codes défauts ont été effacés avec succès</p>
+            </div>
+
+            <div class="km-info">
+                <h3 style="color: #00d9ff; margin-bottom: 15px;">📊 Vérification kilométrique</h3>
+                <p><strong>ECU Moteur:</strong> 127 458 km</p>
+                <p><strong>ECU ABS:</strong> 127 457 km</p>
+                <p><strong>Tableau de bord:</strong> 127 458 km</p>
+                <p style="margin-top: 15px; color: #00ff88;"><strong>Statut:</strong> ✓ Cohérent</p>
+            </div>
+
+            <h3 style="text-align: center; color: #00d9ff; margin: 30px 0;">Scannez votre rapport</h3>
+            
+            <div class="qr-container">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://karadiag.com/diagnostic" alt="QR Code Rapport" class="qr-code">
+            </div>
+
+            <p style="text-align: center; color: #8b91a7; margin: 20px 0;">Scannez ce QR code pour télécharger votre rapport complet</p>
+
+            <button class="btn" onclick="downloadReport()">📥 RECEVOIR PAR EMAIL</button>
+            <button class="btn-secondary btn" onclick="restartDemo()">🏠 NOUVEAU DIAGNOSTIC</button>
+        </div>
+    </div>
+
+    <script>
+        function selectPlan(plan) {
+            showPage(2);
+        }
+
+        function showPage(pageNum) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + pageNum).classList.add('active');
+        }
+
+        function startScan() {
+            showPage(4);
+            
+            const messages = [
+                "Connexion établie...",
+                "Lecture des codes défauts...",
+                "Analyse des systèmes...",
+                "Vérification kilométrique...",
+                "Génération du rapport..."
+            ];
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < messages.length) {
+                    document.getElementById('scanStatus').textContent = messages[index];
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => showPage(5), 500);
+                }
+            }, 600);
+        }
+
+        function downloadReport() {
+            alert('📧 Rapport envoyé par email!');
+        }
+
+        function restartDemo() {
+            showPage(1);
+        }
+    </script>
+</body>
+</html>
