@@ -66,7 +66,7 @@
         function displayReport(data) {
             let html = `
                 <div class="info">
-                    <p><strong>Date :</strong> ${data.horodatage || 'N/A'}</p>
+                    <p><strong>Date :</strong> <span id="current-date"></span></p>
                     <p><strong>Immatriculation :</strong> ${data.immatriculation || 'N/A'}</p>
                     <p><strong>Mode :</strong> ${data.mode || 'N/A'}</p>
                 </div>
@@ -94,6 +94,13 @@
                     <p><strong>Statut :</strong> <span style="color: ${data.status_color || '#00d4ff'}">${data.mileage_status || 'N/A'}</span></p>
                 </div>
             `;
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR');
+            html = html.replace('<span id="current-date"></span>', dateStr);
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR');
+            html = html.replace('<span id="current-date"></span>', dateStr);
 
             document.getElementById('report-content').innerHTML = html;
         }
