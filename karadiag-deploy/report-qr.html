@@ -133,6 +133,10 @@
     <div class="container">
         <div id="report-content">⏳ Chargement...</div>
         
+        <button onclick="downloadReport()" class="btn-download" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); margin-bottom: 15px;">
+            📥 Télécharger votre rapport
+        </button>
+        
         <button onclick="window.location.href='https://karadiag.com'" class="btn-home">
             🏠 Retour au menu
         </button>
@@ -224,6 +228,11 @@
             html += '</div>';
 
             document.getElementById('report-content').innerHTML = html;
+        }
+    
+        function downloadReport() {
+            // Utilise la fonction d'impression du navigateur pour sauvegarder en PDF
+            window.print();
         }
     </script>
 </body>
