@@ -3,111 +3,590 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rapport de Diagnostic - KaraDiag</title>
+    <title>KARADIAG — Votre rapport</title>
     <style>
+        /* ============================================================
+           Reproduction fidèle du rapport KARADIAG borne (step5)
+           Source : app_5002.py lignes 1915-2170 (styles globaux)
+                  + lignes 2341-2376 (structure résultats)
+                  + lignes 2804-2923 (rendu JS displayResults)
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Arial', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
             color: white;
-            padding: 20px;
-            margin: 0;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
-            border-radius: 15px;
+            padding: 40px 20px;
         }
-        h1 { color: #00d4ff; }
-        .code { background: #ff6b6b; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        .info { background: rgba(0,212,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; }
-        button {
+        /* Header KARADIAG / DIAGNOSTIC PROFESSIONNEL */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 0;
+            border-bottom: 3px solid #0f3460;
+        }
+        .header h1 {
+            font-size: 3em;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .header p {
+            font-size: 1.2em;
+            color: #888;
+            letter-spacing: 2px;
+        }
+        /* Bloc résultats principal */
+        .diagnostic-results {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 30px;
+        }
+        /* "✓ Diagnostic terminé" en vert (identique borne) */
+        .success-msg {
+            color: #00ff88;
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        /* Titre "Codes erreurs détectés:" */
+        #error-codes h3 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        /* Chaque code DTC (identique borne .code-error) */
+        .code-error {
+            background: #0f3460;
+            border-left: 5px solid #ff4757;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .code-error h4 {
+            color: #ff4757;
+            margin-bottom: 10px;
+        }
+        .code-error p {
+            color: white;
+            line-height: 1.5;
+        }
+        .code-error p.subtitle {
+            color: #ccc;
+            margin-top: 6px;
+        }
+        /* Info-box pour effacement / véhicule / live / km (identique borne) */
+        .info-box {
+            background: #0f3460;
+            border-left: 5px solid #00d4ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .info-box.success {
+            border-left-color: #00ff88;
+        }
+        .info-box h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .info-box p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        .info-box p.small {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #888;
+        }
+        /* Ligne info VIN/Marque + lignes live data (identique borne) */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #0f3460;
+            border-radius: 8px;
+            margin: 6px 0;
+            align-items: center;
+        }
+        .info-row span {
+            color: #ccc;
+        }
+        .info-row strong {
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+        }
+        .info-row strong.value-green {
+            color: #00ff88;
+            font-family: 'Arial', sans-serif;
+        }
+        .info-row strong.value-red {
+            color: #ff4757;
+            font-family: 'Arial', sans-serif;
+        }
+        /* Lignes km multi-calculateurs (identique borne lignes 2833-2843) */
+        .km-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f3460;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .km-row .km-left {
+            display: flex;
+            align-items: center;
+        }
+        .km-row .km-left .check {
+            color: #00ff88;
+            margin-right: 6px;
+        }
+        .km-row .km-right {
+            text-align: right;
+            white-space: nowrap;
+            margin-left: 12px;
+        }
+        .km-row .km-value {
+            color: #00d4ff;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .km-row .km-delta {
+            font-size: 0.82em;
+            margin-left: 8px;
+        }
+        .km-row .km-delta.zero { color: #00ff88; }
+        .km-row .km-delta.other { color: #ffa500; }
+        /* Kilométrage retenu (identique borne lignes 2862-2867) */
+        .km-retenu {
+            margin-top: 14px;
+            padding: 10px 15px;
+            background: #0a2040;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .km-retenu span {
+            color: #ccc;
+        }
+        .km-retenu strong {
+            color: #00ff88;
+            font-size: 1.1em;
+        }
+        .km-status {
+            margin-top: 15px;
+            font-size: 1em;
+        }
+        .km-note {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        /* Footer buttons (mobile équivalent des delivery-cards borne) */
+        .footer-actions {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .btn {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 18px 40px;
+            color: #1a1a2e;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+        .btn-secondary {
             background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
             color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px;
+        }
+        .footer-warning {
+            margin-top: 25px;
+            color: #f39c12;
+            font-size: 0.95em;
+            line-height: 1.6;
+            padding: 15px 20px;
+            background: rgba(243, 156, 18, 0.08);
+            border-radius: 8px;
+            border-left: 3px solid #f39c12;
+        }
+        .footer-contact {
+            margin-top: 18px;
+            color: #888;
+            font-size: 0.9em;
+        }
+        .footer-contact a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        .date-bar {
+            text-align: center;
+            color: #00d4ff;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+            padding: 10px;
+            background: #0f3460;
+            border-radius: 8px;
+        }
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ff4757;
+            font-size: 1.3em;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 12px;
+            }
+            .header {
+                margin-bottom: 30px;
+                padding: 20px 0;
+            }
+            .header h1 { font-size: 2.2em; }
+            .header p { font-size: 1em; }
+            .diagnostic-results {
+                padding: 20px;
+            }
+            .success-msg { font-size: 2em; }
+            .btn { padding: 15px 30px; font-size: 1.05em; }
+        }
+        @media print {
+            body { background: white; color: black; }
+            .footer-actions { display: none; }
+            .diagnostic-results { background: #f5f5f5; color: black; }
+            .info-box, .code-error, .km-row, .km-retenu, .info-row {
+                background: #fff; color: black; border-color: #ddd;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚗 Rapport de Diagnostic</h1>
-        <div id="report-content">Chargement...</div>
-        <button onclick="window.print()">🖨️ Imprimer</button>
-        <button onclick="downloadPDF()">📄 Télécharger PDF</button>
+        <!-- Header identique borne -->
+        <div class="header">
+            <h1>KARADIAG</h1>
+            <p>DIAGNOSTIC PROFESSIONNEL</p>
+        </div>
+
+        <!-- Contenu rapport (rendu JS) -->
+        <div id="content">
+            <div class="error-state">Chargement du rapport...</div>
+        </div>
     </div>
 
     <script>
-        // Récupérer les données depuis le hash (#)
-        const hash = window.location.hash.substring(1);
-        
-        if (hash) {
+        // ============================================================
+        // Décodage base64 URL-safe (fragment URL après #)
+        // Gère multiples cas : URL-encoding par scanner QR, padding manquant,
+        // UTF-8 BMW (caractères accentués français)
+        // ============================================================
+        let _decodeError = null;
+        let _hashLength = 0;
+
+        function decodeData() {
             try {
-                // Décoder les données base64
-                const jsonStr = atob(hash.replace(/-/g, '+').replace(/_/g, '/'));
-                const data = JSON.parse(jsonStr);
-                
-                // Afficher le rapport
-                displayReport(data);
+                let hash = window.location.hash.substring(1);
+                if (!hash) {
+                    throw new Error('Aucun fragment URL (#) trouvé');
+                }
+
+                _hashLength = hash.length;
+
+                // 1. URL-decode si le scanner a encodé %3D, %2F, %2B, etc.
+                try {
+                    hash = decodeURIComponent(hash);
+                } catch (e) {
+                    // Si % isolé, continuer avec hash brut
+                }
+
+                // 2. URL-safe base64 → standard base64
+                let b64 = hash.replace(/-/g, '+').replace(/_/g, '/');
+
+                // 3. Nettoyer espaces éventuels
+                b64 = b64.replace(/\s/g, '');
+
+                // 4. Padding si manquant
+                const pad = b64.length % 4;
+                if (pad) {
+                    b64 += '='.repeat(4 - pad);
+                }
+
+                // 5. Decode base64
+                let decoded_bin;
+                try {
+                    decoded_bin = atob(b64);
+                } catch (e) {
+                    throw new Error('Base64 invalide : ' + (e.message || e) + ' | b64.len=' + b64.length);
+                }
+
+                // 6. Decode UTF-8 — méthode moderne (TextDecoder) avec fallback
+                let json_str;
+                try {
+                    // Méthode moderne — supporte UTF-8 robustement
+                    const bytes = new Uint8Array(decoded_bin.length);
+                    for (let i = 0; i < decoded_bin.length; i++) {
+                        bytes[i] = decoded_bin.charCodeAt(i);
+                    }
+                    json_str = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+                } catch (e1) {
+                    // Fallback ancienne méthode si TextDecoder absent
+                    try {
+                        json_str = decodeURIComponent(escape(decoded_bin));
+                    } catch (e2) {
+                        json_str = decoded_bin;
+                    }
+                }
+
+                // 7. Parser JSON
+                let data;
+                try {
+                    data = JSON.parse(json_str);
+                } catch (e) {
+                    throw new Error('JSON invalide : ' + (e.message || e) + ' | Preview : ' + json_str.substring(0, 120));
+                }
+
+                return data;
             } catch (e) {
-                document.getElementById('report-content').innerHTML = 
-                    '<p style="color: #ff6b6b;">❌ Erreur de chargement du rapport</p>';
+                _decodeError = e.message || String(e);
+                console.error('Erreur décodage QR:', e);
+                console.error('Hash brut:', window.location.hash);
+                return null;
             }
-        } else {
-            document.getElementById('report-content').innerHTML = 
-                '<p style="color: #ff6b6b;">❌ Aucune donnée trouvée</p>';
         }
 
-        function displayReport(data) {
-            let html = `
-                <div class="info">
-                    <p><strong>Date :</strong> <span id="current-date"></span></p>
-                    <p><strong>Immatriculation :</strong> ${data.immatriculation || 'N/A'}</p>
-                    <p><strong>Mode :</strong> ${data.mode || 'N/A'}</p>
-                </div>
-            `;
+        // ============================================================
+        // Helper : escape HTML (anti-XSS)
+        // ============================================================
+        function esc(s) {
+            if (s === null || s === undefined) return '';
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
-            // Codes défauts
-            if (data.codes && data.codes.length > 0) {
-                html += '<h2>🔴 Codes Défauts</h2>';
-                data.codes.forEach(code => {
-                    html += `<div class="code">${code}</div>`;
+        // ============================================================
+        // Rendu rapport — STRICTEMENT identique au step5 borne
+        // ============================================================
+        function displayReport(data) {
+            const c = document.getElementById('content');
+            if (!data) {
+                const errDetail = _decodeError || 'données absentes';
+                const fullHash = window.location.hash || '';
+                const hashStart = fullHash.substring(0, 60);
+                const hashEnd = fullHash.length > 120 ? fullHash.substring(fullHash.length - 40) : '';
+                c.innerHTML = `<div class="error-state">
+                    ❌ Impossible de charger le rapport.<br>
+                    QR code invalide ou expiré.
+                    <div style="font-size:0.55em; color:#888; margin-top:20px; word-break:break-all; line-height:1.4; text-align:left; max-width:90%; margin-left:auto; margin-right:auto;">
+                        <strong style="color:#ff4757;">Détail technique :</strong><br>
+                        <code style="font-family:monospace;">${esc(errDetail)}</code><br><br>
+                        <strong style="color:#00d4ff;">Taille hash reçu :</strong> ${_hashLength} caractères<br><br>
+                        <strong style="color:#00d4ff;">Fragment URL (début) :</strong><br>
+                        <code style="font-family:monospace; font-size:0.85em;">${esc(hashStart)}${fullHash.length > 60 ? '...' : ''}</code>
+                        ${hashEnd ? `<br><br><strong style="color:#00d4ff;">Fragment URL (fin) :</strong><br><code style="font-family:monospace; font-size:0.85em;">...${esc(hashEnd)}</code>` : ''}
+                    </div>
+                </div>`;
+                return;
+            }
+
+            let html = '<div class="diagnostic-results">';
+
+            // Date (en haut, sous "✓ Diagnostic terminé")
+            const dateValue = data.date || data.horodatage || '';
+
+            // === 1. ✓ Diagnostic terminé (success-msg borne ligne 2343) ===
+            html += '<div class="success-msg">✓ Diagnostic terminé</div>';
+
+            if (dateValue) {
+                html += `<div class="date-bar">📅 ${esc(dateValue)}</div>`;
+            }
+
+            // === 2. Codes erreurs (borne lignes 2805-2815) ===
+            const codes_raw = (data.codes || '').trim();
+            if (codes_raw && codes_raw !== 'Aucun code défaut' && codes_raw !== 'Aucun code defaut') {
+                html += '<div id="error-codes"><h3>Codes erreurs détectés:</h3>';
+                const codes_list = codes_raw.split('|||').filter(c => c.trim());
+                if (codes_list.length === 0) {
+                    html += `<div class="code-error"><p>${esc(codes_raw)}</p></div>`;
+                } else {
+                    codes_list.forEach(code => {
+                        // Format KARADIAG : "BMW-A3C1: Description... — ACTIF"
+                        const parts = code.split(':');
+                        const code_id = parts[0].trim();
+                        const code_desc = parts.slice(1).join(':').trim();
+                        html += `<div class="code-error">
+                            <h4>${esc(code_id)}</h4>
+                            <p>${esc(code_desc)}</p>
+                            <p class="subtitle">Code d'erreur détecté</p>
+                        </div>`;
+                    });
+                }
+                html += '</div>';
+            } else {
+                html += '<div id="error-codes"><h3>Codes erreurs détectés:</h3>';
+                html += '<div class="info-box success"><h4>✓ Aucun code défaut</h4><p>Aucun code défaut détecté lors du diagnostic.</p></div></div>';
+            }
+
+            // === 3. ✓ Effacement effectué (borne lignes 2819-2826) ===
+            html += `<div id="clearing-result">
+                <div class="info-box success" style="margin-top: 30px;">
+                    <h4>✓ Effacement effectué</h4>
+                    <p>Les codes défauts ont été effacés avec succès de la mémoire du calculateur.</p>
+                    <p class="small">Recommandation: Effectuez un essai routier pour vérifier que les codes ne réapparaissent pas.</p>
+                    <p class="small">CONSEIL: Coupez le contact 30 secondes puis redémarrez pour éteindre les voyants.</p>
+                </div>
+            </div>`;
+
+            // === 4. 🚗 Véhicule identifié (borne lignes 2880-2892) ===
+            if (data.vin || data.vehicle_brand) {
+                html += '<div class="info-box"><h4>🚗 Véhicule identifié</h4>';
+                if (data.vin) {
+                    html += `<div class="info-row"><span>VIN</span><strong>${esc(data.vin)}</strong></div>`;
+                }
+                if (data.vehicle_brand) {
+                    html += `<div class="info-row"><span>Marque</span><strong>${esc(data.vehicle_brand)}</strong></div>`;
+                }
+                html += '</div>';
+            }
+
+            // === 5. 🔴 Données temps réel (borne lignes 2895-2922) ===
+            if (data.live_data && typeof data.live_data === 'object' && Object.keys(data.live_data).length > 0) {
+                const ld = data.live_data;
+                let live_html = '';
+
+                if (ld.rpm !== null && ld.rpm !== undefined) {
+                    live_html += `<div class="info-row"><span>Régime moteur</span><strong class="value-green">${esc(Math.round(ld.rpm))} tr/min</strong></div>`;
+                }
+                const tempVal = (ld.temp !== null && ld.temp !== undefined) ? ld.temp : ld.coolant_temp;
+                if (tempVal !== null && tempVal !== undefined) {
+                    const tempCls = (tempVal > 110) ? 'value-red' : 'value-green';
+                    live_html += `<div class="info-row"><span>Température moteur</span><strong class="${tempCls}">${esc(tempVal)} °C</strong></div>`;
+                }
+                if (ld.speed !== null && ld.speed !== undefined) {
+                    live_html += `<div class="info-row"><span>Vitesse</span><strong class="value-green">${esc(ld.speed)} km/h</strong></div>`;
+                }
+                const voltVal = (ld.voltage !== null && ld.voltage !== undefined) ? ld.voltage : ld.battery_voltage;
+                if (voltVal !== null && voltVal !== undefined) {
+                    const voltCls = (voltVal < 11.5) ? 'value-red' : 'value-green';
+                    live_html += `<div class="info-row"><span>Tension batterie</span><strong class="${voltCls}">${esc(voltVal)} V</strong></div>`;
+                }
+                if (ld.engine_load !== null && ld.engine_load !== undefined) {
+                    live_html += `<div class="info-row"><span>Charge moteur</span><strong class="value-green">${esc(ld.engine_load)} %</strong></div>`;
+                }
+                if (ld.intake_temp !== null && ld.intake_temp !== undefined) {
+                    live_html += `<div class="info-row"><span>Température d'admission</span><strong class="value-green">${esc(ld.intake_temp)} °C</strong></div>`;
+                }
+                // Masquer position papillon si RPM=0 (identique borne ligne 2912)
+                const hideThrottle = (ld.rpm !== null && ld.rpm !== undefined && ld.rpm === 0);
+                if (ld.throttle_pos !== null && ld.throttle_pos !== undefined && !hideThrottle) {
+                    live_html += `<div class="info-row"><span>Position papillon</span><strong class="value-green">${esc(ld.throttle_pos)} %</strong></div>`;
+                }
+
+                if (live_html) {
+                    html += `<div class="info-box"><h4>🔴 Données temps réel du véhicule</h4>${live_html}</div>`;
+                }
+            }
+
+            // === 6. 📊 Vérification kilométrage (borne lignes 2829-2876) ===
+            html += '<div class="info-box"><h4>📊 Vérification kilométrage multi-calculateurs</h4>';
+
+            if (data.km_ecu_readings && Array.isArray(data.km_ecu_readings) && data.km_ecu_readings.length > 0) {
+                // NOUVEAU format Cycle 8 : 7 sources dynamiques (identique borne 2832-2844)
+                data.km_ecu_readings.forEach(r => {
+                    const label = r.label || 'Calculateur';
+                    const km_fmt = r.km_formatted || (r.km ? r.km + ' km' : 'N/A');
+                    let delta_html = '';
+                    if (r.delta_formatted) {
+                        const delta_cls = (r.delta === 0) ? 'zero' : 'other';
+                        delta_html = `<span class="km-delta ${delta_cls}">${esc(r.delta_formatted)}</span>`;
+                    }
+                    html += `<div class="km-row">
+                        <div class="km-left"><span class="check">✅</span><strong>${esc(label)}</strong></div>
+                        <div class="km-right"><span class="km-value">${esc(km_fmt)} km</span>${delta_html}</div>
+                    </div>`;
                 });
             } else {
-                html += '<p style="color: #00d4ff;">✅ Aucun code défaut</p>';
+                // Fallback rétrocompat ancien format (4 sources fixes — identique borne 2847-2860)
+                const km_engine = data.mileage_engine || 'Non disponible';
+                const km_trans = data.mileage_transmission || 'Non disponible';
+                const km_abs = data.mileage_abs || 'Non disponible';
+                const km_dash = data.mileage_dashboard || 'Non disponible';
+                html += `<div class="km-row"><div class="km-left"><strong>ECU Moteur</strong></div><div class="km-right"><span class="km-value">${esc(km_engine)} km</span></div></div>`;
+                html += `<div class="km-row"><div class="km-left"><strong>ECU Transmission</strong></div><div class="km-right"><span class="km-value">${esc(km_trans)} km</span></div></div>`;
+                html += `<div class="km-row"><div class="km-left"><strong>ECU ABS</strong></div><div class="km-right"><span class="km-value">${esc(km_abs)} km</span></div></div>`;
+                html += `<div class="km-row"><div class="km-left"><strong>ECU Tableau de bord</strong></div><div class="km-right"><span class="km-value">${esc(km_dash)} km</span></div></div>`;
             }
 
-            // Kilométrage
-            html += `
-                <div class="info">
-                    <h2>📊 Kilométrage</h2>
-                    <p><strong>ABS :</strong> ${data.mileage_abs || 'N/A'} km</p>
-                    <p><strong>Tableau de bord :</strong> ${data.mileage_dashboard || 'N/A'} km</p>
-                    <p><strong>Moteur :</strong> ${data.mileage_engine || 'N/A'} km</p>
-                    <p><strong>Transmission :</strong> ${data.mileage_transmission || 'N/A'}</p>
-                    <p><strong>Note :</strong> ${data.mileage_note || 'N/A'}</p>
-                    <p><strong>Statut :</strong> <span style="color: ${data.status_color || '#00d4ff'}">${data.mileage_status || 'N/A'}</span></p>
+            // Kilométrage retenu (identique borne 2862-2867)
+            if (data.km_retenu_formatted) {
+                html += `<div class="km-retenu"><span>Kilométrage retenu</span><strong>${esc(data.km_retenu_formatted)}</strong></div>`;
+            }
+
+            // Statut COHÉRENT/SUSPECT/FRAUDE (identique borne 2873)
+            if (data.mileage_status) {
+                let color = data.status_color || '';
+                if (!color) {
+                    const s = (data.mileage_status || '').toLowerCase();
+                    if (s.indexOf('cohérent') >= 0 || s.indexOf('coherent') >= 0) color = '#00ff88';
+                    else if (s.indexOf('suspect') >= 0) color = '#ffa500';
+                    else if (s.indexOf('fraude') >= 0) color = '#ff4757';
+                    else color = '#00d4ff';
+                }
+                html += `<p class="km-status" style="color:${esc(color)}"><strong>Statut:</strong> ${esc(data.mileage_status)}</p>`;
+            }
+
+            // Note (identique borne 2874)
+            if (data.mileage_note) {
+                html += `<p class="km-note">${esc(data.mileage_note)}</p>`;
+            }
+
+            html += '</div>'; // close info-box km
+
+            // === 7. Boutons action (équivalent mobile des delivery-cards borne) ===
+            html += `<div class="footer-actions">
+                <button class="btn btn-secondary" onclick="window.print()">📥 Télécharger</button>
+                <a class="btn" href="https://karadiag.com">🏠 Retour au menu</a>
+                <div class="footer-warning">
+                    ⚠️ Ce diagnostic est indicatif. Faites contrôler votre véhicule par un garagiste agréé.
                 </div>
-            `;
+                <div class="footer-contact">
+                    📧 <a href="mailto:contact@karadiag.com">contact@karadiag.com</a> &nbsp;|&nbsp;
+                    🌐 <a href="https://www.karadiag.com">www.karadiag.com</a>
+                </div>
+            </div>`;
 
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR');
-            html = html.replace('<span id="current-date"></span>', dateStr);
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR');
-            html = html.replace('<span id="current-date"></span>', dateStr);
+            html += '</div>'; // close diagnostic-results
 
-            document.getElementById('report-content').innerHTML = html;
+            c.innerHTML = html;
         }
 
-        function downloadPDF() {
-            alert('Fonction PDF en cours de développement');
-        }
+        // ============================================================
+        // Init
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = decodeData();
+            displayReport(data);
+        });
     </script>
 </body>
 </html>
