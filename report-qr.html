@@ -276,6 +276,8 @@
             }
         }
     </style>
+    <!-- Cycle 8C — Pako pour décompression gzip côté client (fallback si CDN down = rapport vide) -->
+    <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -309,6 +311,13 @@
 
                 _hashLength = hash.length;
 
+                // Cycle 8C — Détection préfixe 'z' (données gzippées)
+                let isGzipped = false;
+                if (hash.charAt(0) === 'z') {
+                    isGzipped = true;
+                    hash = hash.substring(1);
+                }
+
                 // 1. URL-decode si le scanner a encodé %3D, %2F, %2B, etc.
                 try {
                     hash = decodeURIComponent(hash);
@@ -328,7 +337,7 @@
                     b64 += '='.repeat(4 - pad);
                 }
 
-                // 5. Decode base64
+                // 5. Decode base64 → bytes
                 let decoded_bin;
                 try {
                     decoded_bin = atob(b64);
@@ -336,21 +345,34 @@
                     throw new Error('Base64 invalide : ' + (e.message || e) + ' | b64.len=' + b64.length);
                 }
 
-                // 6. Decode UTF-8 — méthode moderne (TextDecoder) avec fallback
+                // 6. Conversion en Uint8Array (commun pour gzip ET UTF-8 direct)
+                const bytes = new Uint8Array(decoded_bin.length);
+                for (let i = 0; i < decoded_bin.length; i++) {
+                    bytes[i] = decoded_bin.charCodeAt(i);
+                }
+
+                // 7. Décompression gzip OU décodage UTF-8 direct
                 let json_str;
-                try {
-                    // Méthode moderne — supporte UTF-8 robustement
-                    const bytes = new Uint8Array(decoded_bin.length);
-                    for (let i = 0; i < decoded_bin.length; i++) {
-                        bytes[i] = decoded_bin.charCodeAt(i);
+                if (isGzipped) {
+                    // Cycle 8C — Décompression gzip via pako
+                    if (typeof pako === 'undefined') {
+                        throw new Error('pako.js absent (CDN bloqué ?) — décompression impossible');
                     }
-                    json_str = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
-                } catch (e1) {
-                    // Fallback ancienne méthode si TextDecoder absent
                     try {
-                        json_str = decodeURIComponent(escape(decoded_bin));
-                    } catch (e2) {
-                        json_str = decoded_bin;
+                        json_str = pako.ungzip(bytes, { to: 'string' });
+                    } catch (e) {
+                        throw new Error('Gzip invalide : ' + (e.message || e));
+                    }
+                } else {
+                    // Décodage UTF-8 direct (rétrocompat ancien format pré-Cycle 8C)
+                    try {
+                        json_str = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+                    } catch (e1) {
+                        try {
+                            json_str = decodeURIComponent(escape(decoded_bin));
+                        } catch (e2) {
+                            json_str = decoded_bin;
+                        }
                     }
                 }
 
@@ -564,29 +586,4 @@
 
             // === 7. Boutons action (équivalent mobile des delivery-cards borne) ===
             html += `<div class="footer-actions">
-                <button class="btn btn-secondary" onclick="window.print()">📥 Télécharger</button>
-                <a class="btn" href="https://karadiag.com">🏠 Retour au menu</a>
-                <div class="footer-warning">
-                    ⚠️ Ce diagnostic est indicatif. Faites contrôler votre véhicule par un garagiste agréé.
-                </div>
-                <div class="footer-contact">
-                    📧 <a href="mailto:contact@karadiag.com">contact@karadiag.com</a> &nbsp;|&nbsp;
-                    🌐 <a href="https://www.karadiag.com">www.karadiag.com</a>
-                </div>
-            </div>`;
-
-            html += '</div>'; // close diagnostic-results
-
-            c.innerHTML = html;
-        }
-
-        // ============================================================
-        // Init
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            const data = decodeData();
-            displayReport(data);
-        });
-    </script>
-</body>
-</html>
+                <butto
