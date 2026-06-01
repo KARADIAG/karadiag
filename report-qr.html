@@ -586,4 +586,29 @@
 
             // === 7. Boutons action (équivalent mobile des delivery-cards borne) ===
             html += `<div class="footer-actions">
-                <butto
+                <button class="btn btn-secondary" onclick="window.print()">📥 Télécharger</button>
+                <a class="btn" href="https://karadiag.com">🏠 Retour au menu</a>
+                <div class="footer-warning">
+                    ⚠️ Ce diagnostic est indicatif. Faites contrôler votre véhicule par un garagiste agréé.
+                </div>
+                <div class="footer-contact">
+                    📧 <a href="mailto:contact@karadiag.com">contact@karadiag.com</a> &nbsp;|&nbsp;
+                    🌐 <a href="https://www.karadiag.com">www.karadiag.com</a>
+                </div>
+            </div>`;
+
+            html += '</div>'; // close diagnostic-results
+
+            c.innerHTML = html;
+        }
+
+        // ============================================================
+        // Init
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = decodeData();
+            displayReport(data);
+        });
+    </script>
+</body>
+</html>
