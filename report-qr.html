@@ -586,7 +586,7 @@
             // Cycle 18 Phase 4 Zone C (04/06/2026) — Identite vehicule (anti-fraude ECUs verifies)
             if (data.ecu_identification && Array.isArray(data.ecu_identification) && data.ecu_identification.length > 0) {
                 html += '<div class="info-box"><h4>📋 Identité véhicule</h4>';
-                html += `<div class="km-row"><span>Modules vérifiés (identité ECU)</span><strong style="color:#00d4ff; font-size:1.1em;">`</strong></div>`;
+                html += `<div class="km-row"><span>Modules vérifiés (identité ECU)</span><strong style="color:#00d4ff; font-size:1.1em;">${data.ecu_identification.length}</strong></div>`;
                 html += '</div>';
             }
 
