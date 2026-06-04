@@ -479,14 +479,23 @@
                 </div>
             </div>`;
 
-            // === 4. 🚗 Véhicule identifié (borne lignes 2880-2892) ===
-            if (data.vin || data.vehicle_brand) {
+            // === 4. 🚗 Véhicule identifié (Cycle 20 04/06/2026 — +Modèle/Année/Moteur) ===
+            if (data.vin || data.vehicle_brand || data.vehicle_model || data.vehicle_year || data.engine_display) {
                 html += '<div class="info-box"><h4>🚗 Véhicule identifié</h4>';
                 if (data.vin) {
                     html += `<div class="info-row"><span>VIN</span><strong>${esc(data.vin)}</strong></div>`;
                 }
                 if (data.vehicle_brand) {
                     html += `<div class="info-row"><span>Marque</span><strong>${esc(data.vehicle_brand)}</strong></div>`;
+                }
+                if (data.vehicle_model) {
+                    html += `<div class="info-row"><span>Modèle</span><strong>${esc(data.vehicle_model)}</strong></div>`;
+                }
+                if (data.vehicle_year) {
+                    html += `<div class="info-row"><span>Année</span><strong>${esc(data.vehicle_year)}</strong></div>`;
+                }
+                if (data.engine_display) {
+                    html += `<div class="info-row"><span>Moteur</span><strong>${esc(data.engine_display)}</strong></div>`;
                 }
                 html += '</div>';
             }
