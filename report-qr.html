@@ -608,6 +608,11 @@
             if (data.ecu_identification && Array.isArray(data.ecu_identification) && data.ecu_identification.length > 0) {
                 html += `<div class="info-box"><h4>${L.identTitle}</h4>`;
                 html += `<div class="km-row"><span>${L.modulesVerified}</span><strong style="color:#00d4ff; font-size:1.1em;">${data.ecu_identification.length}</strong></div>`;
+                data.ecu_identification.forEach(function(e){
+                    var organe = (e && e.organe) ? e.organe : 'Calculateur';
+                    var addr = (e && e.addr) ? e.addr : '';
+                    html += `<div class="km-row"><span>${organe}</span><strong style="color:#00d4ff; font-family:monospace; font-size:0.9em;">${addr}</strong></div>`;
+                });
                 html += '</div>';
             }
 
