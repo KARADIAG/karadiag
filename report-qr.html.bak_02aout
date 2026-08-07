@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARADIAG — Votre rapport</title>
+    <style>
+        /* ============================================================
+           Reproduction fidèle du rapport KARADIAG borne (step5)
+           Source : app_5002.py lignes 1915-2170 (styles globaux)
+                  + lignes 2341-2376 (structure résultats)
+                  + lignes 2804-2923 (rendu JS displayResults)
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        /* Header KARADIAG / DIAGNOSTIC PROFESSIONNEL */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 0;
+            border-bottom: 3px solid #0f3460;
+        }
+        .header h1 {
+            font-size: 3em;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .header p {
+            font-size: 1.2em;
+            color: #888;
+            letter-spacing: 2px;
+        }
+        /* Bloc résultats principal */
+        .diagnostic-results {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 30px;
+        }
+        /* "✓ Diagnostic terminé" en vert (identique borne) */
+        .success-msg {
+            color: #00ff88;
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        /* Titre "Codes erreurs détectés:" */
+        #error-codes h3 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        /* Chaque code DTC (identique borne .code-error) */
+        .code-error {
+            background: #0f3460;
+            border-left: 5px solid #ff4757;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .code-error h4 {
+            color: #ff4757;
+            margin-bottom: 10px;
+        }
+        .code-error p {
+            color: white;
+            line-height: 1.5;
+        }
+        .code-error p.subtitle {
+            color: #ccc;
+            margin-top: 6px;
+        }
+        /* Info-box pour effacement / véhicule / live / km (identique borne) */
+        .info-box {
+            background: #0f3460;
+            border-left: 5px solid #00d4ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .info-box.success {
+            border-left-color: #00ff88;
+        }
+        .info-box h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .info-box p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        .info-box p.small {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #888;
+        }
+        /* Ligne info VIN/Marque + lignes live data (identique borne) */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #0f3460;
+            border-radius: 8px;
+            margin: 6px 0;
+            align-items: center;
+        }
+        .info-row span {
+            color: #ccc;
+        }
+        .info-row strong {
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+        }
+        .info-row strong.value-green {
+            color: #00ff88;
+            font-family: 'Arial', sans-serif;
+        }
+        .info-row strong.value-red {
+            color: #ff4757;
+            font-family: 'Arial', sans-serif;
+        }
+        /* Lignes km multi-calculateurs (identique borne lignes 2833-2843) */
+        .km-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f3460;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .km-row .km-left {
+            display: flex;
+            align-items: center;
+        }
+        .km-row .km-left .check {
+            color: #00ff88;
+            margin-right: 6px;
+        }
+        .km-row .km-right {
+            text-align: right;
+            white-space: nowrap;
+            margin-left: 12px;
+        }
+        .km-row .km-value {
+            color: #00d4ff;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .km-row .km-delta {
+            font-size: 0.82em;
+            margin-left: 8px;
+        }
+        .km-row .km-delta.zero { color: #00ff88; }
+        .km-row .km-delta.other { color: #ffa500; }
+        /* Kilométrage retenu (identique borne lignes 2862-2867) */
+        .km-retenu {
+            margin-top: 14px;
+            padding: 10px 15px;
+            background: #0a2040;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .km-retenu span {
+            color: #ccc;
+        }
+        .km-retenu strong {
+            color: #00ff88;
+            font-size: 1.1em;
+        }
+        .km-status {
+            margin-top: 15px;
+            font-size: 1em;
+        }
+        .km-note {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        /* Footer buttons (mobile équivalent des delivery-cards borne) */
+        .footer-actions {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .btn {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 18px 40px;
+            color: #1a1a2e;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+        }
+        .footer-warning {
+            margin-top: 25px;
+            color: #f39c12;
+            font-size: 0.95em;
+            line-height: 1.6;
+            padding: 15px 20px;
+            background: rgba(243, 156, 18, 0.08);
+            border-radius: 8px;
+            border-left: 3px solid #f39c12;
+        }
+        .footer-contact {
+            margin-top: 18px;
+            color: #888;
+            font-size: 0.9em;
+        }
+        .footer-contact a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        .date-bar {
+            text-align: center;
+            color: #00d4ff;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+            padding: 10px;
+            background: #0f3460;
+            border-radius: 8px;
+        }
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ff4757;
+            font-size: 1.3em;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 12px;
+            }
+            .header {
+                margin-bottom: 30px;
+                padding: 20px 0;
+            }
+            .header h1 { font-size: 2.2em; }
+            .header p { font-size: 1em; }
+            .diagnostic-results {
+                padding: 20px;
+            }
+            .success-msg { font-size: 2em; }
+            .btn { padding: 15px 30px; font-size: 1.05em; }
+        }
+        @media print {
+            body { background: white; color: black; }
+            .footer-actions { display: none; }
+            .diagnostic-results { background: #f5f5f5; color: black; }
+            .info-box, .code-error, .km-row, .km-retenu, .info-row {
+                background: #fff; color: black; border-color: #ddd;
+            }
+        }
+    </style>
+    <!-- Cycle 8C — Pako pour décompression gzip côté client (fallback si CDN down = rapport vide) -->
+    <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header identique borne -->
+        <div class="header">
+            <h1>KARADIAG</h1>
+            <p>DIAGNOSTIC PROFESSIONNEL</p>
+        </div>
+
+        <!-- Contenu rapport (rendu JS) -->
+        <div id="content">
+            <div class="error-state">Chargement du rapport...</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // Décodage base64 URL-safe (fragment URL après #)
+        // Gère multiples cas : URL-encoding par scanner QR, padding manquant,
+        // UTF-8 BMW (caractères accentués français)
+        // ============================================================
+        let _decodeError = null;
+        let _hashLength = 0;
+
+        function decodeData() {
+            try {
+                let hash = window.location.hash.substring(1);
+                if (!hash) {
+                    throw new Error('Aucun fragment URL (#) trouvé');
+                }
+
+                _hashLength = hash.length;
+
+                // Cycle 8C — Détection préfixe 'z' (données gzippées)
+                let isGzipped = false;
+                if (hash.charAt(0) === 'z') {
+                    isGzipped = true;
+                    hash = hash.substring(1);
+                }
+
+                // 1. URL-decode si le scanner a encodé %3D, %2F, %2B, etc.
+                try {
+                    hash = decodeURIComponent(hash);
+                } catch (e) {
+                    // Si % isolé, continuer avec hash brut
+                }
+
+                // 2. URL-safe base64 → standard base64
+                let b64 = hash.replace(/-/g, '+').replace(/_/g, '/');
+
+                // 3. Nettoyer espaces éventuels
+                b64 = b64.replace(/\s/g, '');
+
+                // 4. Padding si manquant
+                const pad = b64.length % 4;
+                if (pad) {
+                    b64 += '='.repeat(4 - pad);
+                }
+
+                // 5. Decode base64 → bytes
+                let decoded_bin;
+                try {
+                    decoded_bin = atob(b64);
+                } catch (e) {
+                    throw new Error('Base64 invalide : ' + (e.message || e) + ' | b64.len=' + b64.length);
+                }
+
+                // 6. Conversion en Uint8Array (commun pour gzip ET UTF-8 direct)
+                const bytes = new Uint8Array(decoded_bin.length);
+                for (let i = 0; i < decoded_bin.length; i++) {
+                    bytes[i] = decoded_bin.charCodeAt(i);
+                }
+
+                // 7. Décompression gzip OU décodage UTF-8 direct
+                let json_str;
+                if (isGzipped) {
+                    // Cycle 8C — Décompression gzip via pako
+                    if (typeof pako === 'undefined') {
+                        throw new Error('pako.js absent (CDN bloqué ?) — décompression impossible');
+                    }
+                    try {
+                        json_str = pako.ungzip(bytes, { to: 'string' });
+                    } catch (e) {
+                        throw new Error('Gzip invalide : ' + (e.message || e));
+                    }
+                } else {
+                    // Décodage UTF-8 direct (rétrocompat ancien format pré-Cycle 8C)
+                    try {
+                        json_str = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+                    } catch (e1) {
+                        try {
+                            json_str = decodeURIComponent(escape(decoded_bin));
+                        } catch (e2) {
+                            json_str = decoded_bin;
+                        }
+                    }
+                }
+
+                // 7. Parser JSON
+                let data;
+                try {
+                    data = JSON.parse(json_str);
+                } catch (e) {
+                    throw new Error('JSON invalide : ' + (e.message || e) + ' | Preview : ' + json_str.substring(0, 120));
+                }
+
+                return data;
+            } catch (e) {
+                _decodeError = e.message || String(e);
+                console.error('Erreur décodage QR:', e);
+                console.error('Hash brut:', window.location.hash);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // Helper : escape HTML (anti-XSS)
+        // ============================================================
+        function esc(s) {
+            if (s === null || s === undefined) return '';
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // ============================================================
+        // Rendu rapport — STRICTEMENT identique au step5 borne
+        // ============================================================
+        function displayReport(data) {
+            const c = document.getElementById('content');
+            if (!data) {
+                const errDetail = _decodeError || 'données absentes';
+                const fullHash = window.location.hash || '';
+                const hashStart = fullHash.substring(0, 60);
+                const hashEnd = fullHash.length > 120 ? fullHash.substring(fullHash.length - 40) : '';
+                c.innerHTML = `<div class="error-state">
+                    ❌ Impossible de charger le rapport.<br>
+                    QR code invalide ou expiré.
+                    <div style="font-size:0.55em; color:#888; margin-top:20px; word-break:break-all; line-height:1.4; text-align:left; max-width:90%; margin-left:auto; margin-right:auto;">
+                        <strong style="color:#ff4757;">Détail technique :</strong><br>
+                        <code style="font-family:monospace;">${esc(errDetail)}</code><br><br>
+                        <strong style="color:#00d4ff;">Taille hash reçu :</strong> ${_hashLength} caractères<br><br>
+                        <strong style="color:#00d4ff;">Fragment URL (début) :</strong><br>
+                        <code style="font-family:monospace; font-size:0.85em;">${esc(hashStart)}${fullHash.length > 60 ? '...' : ''}</code>
+                        ${hashEnd ? `<br><br><strong style="color:#00d4ff;">Fragment URL (fin) :</strong><br><code style="font-family:monospace; font-size:0.85em;">...${esc(hashEnd)}</code>` : ''}
+                    </div>
+                </div>`;
+                return;
+            }
+
+            // ── i18n rapport QR (langue reçue de la borne via data.lang) ──
+            const TR = {
+              fr:{diagDone:"✓ Diagnostic terminé",codesTitle:"Codes erreurs détectés:",codeDetected:"Code d'erreur détecté",noFaultTitle:"✓ Aucun code défaut",noFaultDesc:"Aucun code défaut détecté lors du diagnostic.",clearTitle:"✓ Effacement effectué",clearDesc:"Les codes défauts ont été effacés avec succès de la mémoire du calculateur.",clearReco:"Recommandation: Effectuez un essai routier pour vérifier que les codes ne réapparaissent pas.",clearTip:"CONSEIL: Coupez le contact 30 secondes puis redémarrez pour éteindre les voyants.",vehTitle:"🚗 Véhicule identifié",vin:"VIN",brand:"Marque",model:"Modèle",year:"Année",engine:"Moteur",liveTitle:"🔴 Données temps réel du véhicule",rpm:"Régime moteur",rpmU:"tr/min",temp:"Température moteur",speed:"Vitesse",volt:"Tension batterie",load:"Charge moteur",intake:"Température d'admission",throttle:"Position papillon",kmTitle:"📊 Vérification kilométrage multi-calculateurs",kmRetenu:"Kilométrage retenu",statusL:"Statut:",ecuM:"ECU Moteur",ecuT:"ECU Transmission",ecuA:"ECU ABS",ecuD:"ECU Tableau de bord",identTitle:"📋 Identité véhicule",modulesVerified:"Modules vérifiés (identité ECU)",dl:"📥 Télécharger",menu:"🏠 Retour au menu",disc:"${L.disc}"},
+              en:{diagDone:"✓ Diagnostic completed",codesTitle:"Error codes detected:",codeDetected:"Error code detected",noFaultTitle:"✓ No fault codes",noFaultDesc:"No fault code detected during the diagnostic.",clearTitle:"✓ Clearing completed",clearDesc:"Fault codes have been successfully cleared from the computer memory.",clearReco:"Recommendation: Perform a test drive to verify that the codes do not reappear.",clearTip:"TIP: Turn off ignition for 30 seconds then restart to turn off warning lights.",vehTitle:"🚗 Vehicle identified",vin:"VIN",brand:"Brand",model:"Model",year:"Year",engine:"Engine",liveTitle:"🔴 Vehicle real-time data",rpm:"Engine RPM",rpmU:"rpm",temp:"Engine temperature",speed:"Speed",volt:"Battery voltage",load:"Engine load",intake:"Intake temperature",throttle:"Throttle position",kmTitle:"📊 Multi-ECU mileage verification",kmRetenu:"Mileage used",statusL:"Status:",ecuM:"Engine ECU",ecuT:"Transmission ECU",ecuA:"ABS ECU",ecuD:"Dashboard ECU",identTitle:"📋 Vehicle information",modulesVerified:"Verified modules (ECU identity)",dl:"📥 Download",menu:"🏠 Return to menu",disc:"⚠️ This diagnostic is indicative. Have your vehicle checked by an approved garage."},
+              de:{diagDone:"✓ Diagnose abgeschlossen",codesTitle:"Fehlercodes erkannt:",codeDetected:"Fehlercode erkannt",noFaultTitle:"✓ Keine Fehlercodes",noFaultDesc:"Während der Diagnose wurde kein Fehlercode erkannt.",clearTitle:"✓ Löschen abgeschlossen",clearDesc:"Fehlercodes wurden erfolgreich aus dem Rechnerspeicher gelöscht.",clearReco:"Empfehlung: Führen Sie eine Probefahrt durch, um zu überprüfen, dass die Codes nicht erneut auftreten.",clearTip:"TIPP: Schalten Sie die Zündung 30 Sekunden aus und starten Sie dann neu, um die Warnleuchten auszuschalten.",vehTitle:"🚗 Fahrzeug identifiziert",vin:"FIN",brand:"Marke",model:"Modell",year:"Jahr",engine:"Motor",liveTitle:"🔴 Fahrzeug-Echtzeitdaten",rpm:"Motordrehzahl",rpmU:"U/min",temp:"Motortemperatur",speed:"Geschwindigkeit",volt:"Batteriespannung",load:"Motorlast",intake:"Ansaugtemperatur",throttle:"Drosselklappenstellung",kmTitle:"📊 Multi-ECU Kilometerstandprüfung",kmRetenu:"Verwendeter Kilometerstand",statusL:"Status:",ecuM:"Motor-ECU",ecuT:"Getriebe-ECU",ecuA:"ABS-ECU",ecuD:"Kombiinstrument-ECU",identTitle:"📋 Fahrzeuginformationen",modulesVerified:"Geprüfte Module (ECU-Identität)",dl:"📥 Herunterladen",menu:"🏠 Zurück zum Menü",disc:"⚠️ Diese Diagnose ist ein Richtwert. Lassen Sie Ihr Fahrzeug von einer autorisierten Werkstatt prüfen."},
+              es:{diagDone:"✓ Diagnóstico finalizado",codesTitle:"Códigos de error detectados:",codeDetected:"Código de error detectado",noFaultTitle:"✓ Sin códigos de avería",noFaultDesc:"No se detectó ningún código de avería durante el diagnóstico.",clearTitle:"✓ Borrado completado",clearDesc:"Los códigos de avería se han borrado correctamente de la memoria de la centralita.",clearReco:"Recomendación: Realice una prueba de conducción para verificar que los códigos no reaparezcan.",clearTip:"CONSEJO: Apague el contacto 30 segundos y reinicie para apagar los testigos.",vehTitle:"🚗 Vehículo identificado",vin:"VIN",brand:"Marca",model:"Modelo",year:"Año",engine:"Motor",liveTitle:"🔴 Datos en tiempo real del vehículo",rpm:"Régimen del motor",rpmU:"rpm",temp:"Temperatura del motor",speed:"Velocidad",volt:"Tensión de la batería",load:"Carga del motor",intake:"Temperatura de admisión",throttle:"Posición de la mariposa",kmTitle:"📊 Verificación de kilometraje multi-centralita",kmRetenu:"Kilometraje registrado",statusL:"Estado:",ecuM:"Centralita motor",ecuT:"Centralita transmisión",ecuA:"Centralita ABS",ecuD:"Centralita cuadro",identTitle:"📋 Información del vehículo",modulesVerified:"Módulos comprobados (identidad ECU)",dl:"📥 Descargar",menu:"🏠 Volver al menú",disc:"⚠️ Este diagnóstico es orientativo. Haga revisar su vehículo por un taller autorizado."},
+              pt:{diagDone:"✓ Diagnóstico concluído",codesTitle:"Códigos de erro detetados:",codeDetected:"Código de erro detetado",noFaultTitle:"✓ Sem códigos de avaria",noFaultDesc:"Nenhum código de avaria detetado durante o diagnóstico.",clearTitle:"✓ Apagamento concluído",clearDesc:"Os códigos de avaria foram apagados com sucesso da memória da centralina.",clearReco:"Recomendação: Faça um teste de condução para verificar se os códigos não reaparecem.",clearTip:"DICA: Desligue a ignição 30 segundos e reinicie para apagar as luzes de aviso.",vehTitle:"🚗 Veículo identificado",vin:"VIN",brand:"Marca",model:"Modelo",year:"Ano",engine:"Motor",liveTitle:"🔴 Dados em tempo real do veículo",rpm:"Rotação do motor",rpmU:"rpm",temp:"Temperatura do motor",speed:"Velocidade",volt:"Tensão da bateria",load:"Carga do motor",intake:"Temperatura de admissão",throttle:"Posição da borboleta",kmTitle:"📊 Verificação de quilometragem multi-centralina",kmRetenu:"Quilometragem utilizada",statusL:"Estado:",ecuM:"Centralina motor",ecuT:"Centralina transmissão",ecuA:"Centralina ABS",ecuD:"Centralina painel",identTitle:"📋 Informações do veículo",modulesVerified:"Módulos verificados (identidade ECU)",dl:"📥 Transferir",menu:"🏠 Voltar ao menu",disc:"⚠️ Este diagnóstico é indicativo. Mande verificar o seu veículo por uma oficina autorizada."},
+              it:{diagDone:"✓ Diagnosi completata",codesTitle:"Codici errore rilevati:",codeDetected:"Codice errore rilevato",noFaultTitle:"✓ Nessun codice guasto",noFaultDesc:"Nessun codice guasto rilevato durante la diagnosi.",clearTitle:"✓ Cancellazione completata",clearDesc:"I codici guasto sono stati cancellati con successo dalla memoria della centralina.",clearReco:"Raccomandazione: Effettuare una prova su strada per verificare che i codici non riappaiano.",clearTip:"CONSIGLIO: Spegnere il quadro 30 secondi poi riavviare per spegnere le spie.",vehTitle:"🚗 Veicolo identificato",vin:"VIN",brand:"Marca",model:"Modello",year:"Anno",engine:"Motore",liveTitle:"🔴 Dati in tempo reale del veicolo",rpm:"Regime motore",rpmU:"giri/min",temp:"Temperatura motore",speed:"Velocità",volt:"Tensione batteria",load:"Carico motore",intake:"Temperatura di aspirazione",throttle:"Posizione farfalla",kmTitle:"📊 Verifica chilometraggio multi-centralina",kmRetenu:"Chilometraggio utilizzato",statusL:"Stato:",ecuM:"Centralina motore",ecuT:"Centralina trasmissione",ecuA:"Centralina ABS",ecuD:"Centralina quadro",identTitle:"📋 Informazioni veicolo",modulesVerified:"Moduli verificati (identità ECU)",dl:"📥 Scarica",menu:"🏠 Torna al menu",disc:"⚠️ Questa diagnosi è indicativa. Fate controllare il vostro veicolo da un'officina autorizzata."},
+              tr:{diagDone:"✓ Teşhis tamamlandı",codesTitle:"Tespit edilen hata kodları:",codeDetected:"Hata kodu tespit edildi",noFaultTitle:"✓ Arıza kodu yok",noFaultDesc:"Teşhis sırasında arıza kodu tespit edilmedi.",clearTitle:"✓ Silme tamamlandı",clearDesc:"Arıza kodları kontrol ünitesi belleğinden başarıyla silindi.",clearReco:"Öneri: Kodların tekrar görünmediğini doğrulamak için bir yol testi yapın.",clearTip:"İPUCU: Uyarı ışıklarını söndürmek için kontağı 30 saniye kapatıp yeniden başlatın.",vehTitle:"🚗 Araç tanımlandı",vin:"VIN",brand:"Marka",model:"Model",year:"Yıl",engine:"Motor",liveTitle:"🔴 Aracın gerçek zamanlı verileri",rpm:"Motor devri",rpmU:"dev/dak",temp:"Motor sıcaklığı",speed:"Hız",volt:"Akü gerilimi",load:"Motor yükü",intake:"Emme sıcaklığı",throttle:"Gaz kelebeği konumu",kmTitle:"📊 Çoklu kontrol ünitesi kilometre doğrulaması",kmRetenu:"Kabul edilen kilometre",statusL:"Durum:",ecuM:"Motor ECU",ecuT:"Şanzıman ECU",ecuA:"ABS ECU",ecuD:"Gösterge ECU",identTitle:"📋 Araç bilgileri",modulesVerified:"Doğrulanmış modüller (ECU kimliği)",dl:"📥 İndir",menu:"🏠 Menüye dön",disc:"⚠️ Bu teşhis bilgilendirme amaçlıdır. Aracınızı yetkili bir servise kontrol ettirin."}
+            };
+            const L = TR[(data.lang || 'fr')] || TR.fr;
+
+            let html = '<div class="diagnostic-results">';
+
+            // Date (en haut, sous "✓ Diagnostic terminé")
+            const dateValue = data.date || data.horodatage || '';
+
+            // === 1. ✓ Diagnostic terminé (success-msg borne ligne 2343) ===
+            html += `<div class="success-msg">${L.diagDone}</div>`;
+
+            if (dateValue) {
+                html += `<div class="date-bar">📅 ${esc(dateValue)}</div>`;
+            }
+
+            // === 2. Codes erreurs (borne lignes 2805-2815) ===
+            const codes_raw = (data.codes || '').trim();
+            if (data.no_fault !== true && codes_raw && codes_raw !== 'Aucun code défaut' && codes_raw !== 'Aucun code defaut') {
+                html += `<div id="error-codes"><h3>${L.codesTitle}</h3>`;
+                const codes_list = codes_raw.split('|||').filter(c => c.trim());
+                if (codes_list.length === 0) {
+                    html += `<div class="code-error"><p>${esc(codes_raw)}</p></div>`;
+                } else {
+                    codes_list.forEach(code => {
+                        // Format KARADIAG : "BMW-A3C1: Description... — ACTIF"
+                        const parts = code.split(':');
+                        const code_id = parts[0].trim();
+                        const code_desc = parts.slice(1).join(':').trim();
+                        html += `<div class="code-error">
+                            <h4>${esc(code_id)}</h4>
+                            <p>${esc(code_desc)}</p>
+                            <p class="subtitle">${L.codeDetected}</p>
+                        </div>`;
+                    });
+                }
+                html += '</div>';
+            } else {
+                html += `<div id="error-codes"><h3>${L.codesTitle}</h3>`;
+                html += `<div class="info-box success"><h4>${L.noFaultTitle}</h4><p>${L.noFaultDesc}</p></div></div>`;
+            }
+
+            // === 3. ✓ Effacement effectué (borne lignes 2819-2826) ===
+            html += `<div id="clearing-result">
+                <div class="info-box success" style="margin-top: 30px;">
+                    <h4>${L.clearTitle}</h4>
+                    <p>${L.clearDesc}</p>
+                    <p class="small">${L.clearReco}</p>
+                    <p class="small">${L.clearTip}</p>
+                </div>
+            </div>`;
+
+            // === 4. 🚗 Véhicule identifié (Cycle 20 04/06/2026 — +Modèle/Année/Moteur) ===
+            if (data.vin || data.vehicle_brand || data.vehicle_model || data.vehicle_year || data.engine_display) {
+                html += `<div class="info-box"><h4>${L.vehTitle}</h4>`;
+                if (data.vin) {
+                    html += `<div class="info-row"><span>${L.vin}</span><strong>${esc(data.vin)}</strong></div>`;
+                }
+                if (data.vehicle_brand) {
+                    html += `<div class="info-row"><span>${L.brand}</span><strong>${esc(data.vehicle_brand)}</strong></div>`;
+                }
+                if (data.vehicle_model) {
+                    html += `<div class="info-row"><span>${L.model}</span><strong>${esc(data.vehicle_model)}</strong></div>`;
+                }
+                if (data.vehicle_year) {
+                    html += `<div class="info-row"><span>${L.year}</span><strong>${esc(data.vehicle_year)}</strong></div>`;
+                }
+                if (data.engine_display) {
+                    html += `<div class="info-row"><span>${L.engine}</span><strong>${esc(data.engine_display)}</strong></div>`;
+                }
+                html += '</div>';
+            }
+
+            // === 5. 🔴 Données temps réel (borne lignes 2895-2922) ===
+            if (data.live_data && typeof data.live_data === 'object' && Object.keys(data.live_data).length > 0) {
+                const ld = data.live_data;
+                let live_html = '';
+
+                if (ld.rpm !== null && ld.rpm !== undefined) {
+                    live_html += `<div class="info-row"><span>${L.rpm}</span><strong class="value-green">${esc(Math.round(ld.rpm))} ${L.rpmU}</strong></div>`;
+                }
+                const tempVal = (ld.temp !== null && ld.temp !== undefined) ? ld.temp : ld.coolant_temp;
+                if (tempVal !== null && tempVal !== undefined) {
+                    const tempCls = (tempVal > 110) ? 'value-red' : 'value-green';
+                    live_html += `<div class="info-row"><span>${L.temp}</span><strong class="${tempCls}">${esc(tempVal)} °C</strong></div>`;
+                }
+                if (ld.speed !== null && ld.speed !== undefined) {
+                    live_html += `<div class="info-row"><span>${L.speed}</span><strong class="value-green">${esc(ld.speed)} km/h</strong></div>`;
+                }
+                const voltVal = (ld.voltage !== null && ld.voltage !== undefined) ? ld.voltage : ld.battery_voltage;
+                if (voltVal !== null && voltVal !== undefined) {
+                    const voltCls = (voltVal < 11.5) ? 'value-red' : 'value-green';
+                    live_html += `<div class="info-row"><span>${L.volt}</span><strong class="${voltCls}">${isNaN(Number(voltVal)) ? esc(voltVal) : Number(voltVal).toFixed(1)} V</strong></div>`;
+                }
+                if (ld.engine_load !== null && ld.engine_load !== undefined) {
+                    live_html += `<div class="info-row"><span>${L.load}</span><strong class="value-green">${esc(ld.engine_load)} %</strong></div>`;
+                }
+                if (ld.intake_temp !== null && ld.intake_temp !== undefined) {
+                    live_html += `<div class="info-row"><span>${L.intake}</span><strong class="value-green">${esc(ld.intake_temp)} °C</strong></div>`;
+                }
+                // Masquer position papillon si RPM=0 (identique borne ligne 2912)
+                const hideThrottle = (ld.rpm !== null && ld.rpm !== undefined && ld.rpm === 0);
+                if (ld.throttle_pos !== null && ld.throttle_pos !== undefined && !hideThrottle) {
+                    live_html += `<div class="info-row"><span>${L.throttle}</span><strong class="value-green">${esc(ld.throttle_pos)} %</strong></div>`;
+                }
+
+                if (live_html) {
+                    html += `<div class="info-box"><h4>${L.liveTitle}</h4>${live_html}</div>`;
+                }
+            }
+
+            // === 6. 📊 Vérification kilométrage (borne lignes 2829-2876) ===
+            html += `<div class="info-box"><h4>${L.kmTitle}</h4>`;
+
+            if (data.km_ecu_readings && Array.isArray(data.km_ecu_readings) && data.km_ecu_readings.length > 0) {
+                // NOUVEAU format Cycle 8 : 7 sources dynamiques (identique borne 2832-2844)
+                data.km_ecu_readings.forEach(r => {
+                    const label = r.label || 'Calculateur';
+                    const km_fmt = r.km_formatted || (r.km ? r.km + ' km' : 'N/A');
+                    let delta_html = '';
+                    if (r.delta_formatted) {
+                        const delta_cls = (r.delta === 0) ? 'zero' : 'other';
+                        delta_html = `<span class="km-delta ${delta_cls}">${esc(r.delta_formatted)}</span>`;
+                    }
+                    html += `<div class="km-row">
+                        <div class="km-left"><span class="check">✅</span><strong>${esc(label)}</strong></div>
+                        <div class="km-right"><span class="km-value">${esc(km_fmt)} km</span>${delta_html}</div>
+                    </div>`;
+                });
+            } else {
+                // Fallback rétrocompat ancien format (4 sources fixes — identique borne 2847-2860)
+                const km_engine = data.mileage_engine || 'Non disponible';
+                const km_trans = data.mileage_transmission || 'Non disponible';
+                const km_abs = data.mileage_abs || 'Non disponible';
+                const km_dash = data.mileage_dashboard || 'Non disponible';
+                html += `<div class="km-row"><div class="km-left"><strong>${L.ecuM}</strong></div><div class="km-right"><span class="km-value">${esc(km_engine)} km</span></div></div>`;
+                html += `<div class="km-row"><div class="km-left"><strong>${L.ecuT}</strong></div><div class="km-right"><span class="km-value">${esc(km_trans)} km</span></div></div>`;
+                html += `<div class="km-row"><div class="km-left"><strong>${L.ecuA}</strong></div><div class="km-right"><span class="km-value">${esc(km_abs)} km</span></div></div>`;
+                html += `<div class="km-row"><div class="km-left"><strong>${L.ecuD}</strong></div><div class="km-right"><span class="km-value">${esc(km_dash)} km</span></div></div>`;
+            }
+
+            // Kilométrage retenu (identique borne 2862-2867)
+            if (data.km_retenu_formatted) {
+                html += `<div class="km-retenu"><span>${L.kmRetenu}</span><strong>${esc(data.km_retenu_formatted)}</strong></div>`;
+            }
+
+            // Statut COHÉRENT/SUSPECT/FRAUDE (identique borne 2873)
+            if (data.mileage_status) {
+                let color = data.status_color || '';
+                if (!color) {
+                    const s = (data.mileage_status || '').toLowerCase();
+                    if (s.indexOf('cohérent') >= 0 || s.indexOf('coherent') >= 0) color = '#00ff88';
+                    else if (s.indexOf('suspect') >= 0) color = '#ffa500';
+                    else if (s.indexOf('fraude') >= 0) color = '#ff4757';
+                    else color = '#00d4ff';
+                }
+                html += `<p class="km-status" style="color:${esc(color)}"><strong>${L.statusL}</strong> ${esc(data.mileage_status)}</p>`;
+            }
+
+            // Note (identique borne 2874)
+            if (data.mileage_note) {
+                html += `<p class="km-note">${esc(data.mileage_note)}</p>`;
+            }
+
+            html += '</div>'; // close info-box km
+            // Cycle 18 Phase 4 Zone C (04/06/2026) — Identite vehicule (anti-fraude ECUs verifies)
+            if (data.ecu_identification && Array.isArray(data.ecu_identification) && data.ecu_identification.length > 0) {
+                html += `<div class="info-box"><h4>${L.identTitle}</h4>`;
+                html += `<div class="km-row"><span>${L.modulesVerified}</span><strong style="color:#00d4ff; font-size:1.1em;">${data.ecu_identification.length}</strong></div>`;
+                var _ecuSeen = {};
+                data.ecu_identification.forEach(function(e){
+                    var organe = (e && e.organe) ? e.organe : 'Calculateur';
+                    if (_ecuSeen[organe]) return;   // dédoublonnage, jamais l'adresse hex au client
+                    _ecuSeen[organe] = true;
+                    html += `<div class="km-row"><span>${organe}</span></div>`;
+                });
+                html += '</div>';
+            }
+
+
+            // === 7. Boutons action (équivalent mobile des delivery-cards borne) ===
+            html += `<div class="footer-actions">
+                <button class="btn btn-secondary" onclick="window.print()">${L.dl}</button>
+                <a class="btn" href="https://karadiag.com">${L.menu}</a>
+                <div class="footer-warning">
+                    ${L.disc}
+                </div>
+                <div class="footer-contact">
+                    📧 <a href="mailto:contact@karadiag.com">contact@karadiag.com</a> &nbsp;|&nbsp;
+                    🌐 <a href="https://www.karadiag.com">www.karadiag.com</a>
+                </div>
+            </div>`;
+
+            html += '</div>'; // close diagnostic-results
+
+            c.innerHTML = html;
+        }
+
+        // ============================================================
+        // Init
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = decodeData();
+            displayReport(data);
+        });
+    </script>
+ <footer style="
+        font-size: 11px;
+        color: #888;
+        text-align: center;
+        padding: 15px 10px;
+        border-top: 1px solid #2a2a3e;
+        margin-top: 20px;
+        line-height: 1.5;
+    ">
+        KARADIAG est un produit indépendant de diagnostic automobile.<br>
+        Les marques mentionnées (BMW, MINI, etc.) sont la propriété de leurs détenteurs respectifs.<br>
+        KARADIAG n'est pas affilié, sponsorisé ou endossé par les constructeurs cités.<br>
+        Les descriptions de codes défauts sont fournies à titre informatif.<br>
+        Consultez un atelier agréé pour diagnostic officiel.
+    </footer>
+</body>
+</html>
