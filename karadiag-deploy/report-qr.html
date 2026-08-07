@@ -457,7 +457,7 @@
 
             // === 2. Codes erreurs (borne lignes 2805-2815) ===
             const codes_raw = (data.codes || '').trim();
-            if (codes_raw && codes_raw !== 'Aucun code défaut' && codes_raw !== 'Aucun code defaut') {
+            if (data.no_fault !== true && codes_raw && codes_raw !== 'Aucun code défaut' && codes_raw !== 'Aucun code defaut') {
                 html += `<div id="error-codes"><h3>${L.codesTitle}</h3>`;
                 const codes_list = codes_raw.split('|||').filter(c => c.trim());
                 if (codes_list.length === 0) {
@@ -531,7 +531,7 @@
                 const voltVal = (ld.voltage !== null && ld.voltage !== undefined) ? ld.voltage : ld.battery_voltage;
                 if (voltVal !== null && voltVal !== undefined) {
                     const voltCls = (voltVal < 11.5) ? 'value-red' : 'value-green';
-                    live_html += `<div class="info-row"><span>${L.volt}</span><strong class="${voltCls}">${esc(voltVal)} V</strong></div>`;
+                    live_html += `<div class="info-row"><span>${L.volt}</span><strong class="${voltCls}">${isNaN(Number(voltVal)) ? esc(voltVal) : Number(voltVal).toFixed(1)} V</strong></div>`;
                 }
                 if (ld.engine_load !== null && ld.engine_load !== undefined) {
                     live_html += `<div class="info-row"><span>${L.load}</span><strong class="value-green">${esc(ld.engine_load)} %</strong></div>`;
@@ -608,10 +608,12 @@
             if (data.ecu_identification && Array.isArray(data.ecu_identification) && data.ecu_identification.length > 0) {
                 html += `<div class="info-box"><h4>${L.identTitle}</h4>`;
                 html += `<div class="km-row"><span>${L.modulesVerified}</span><strong style="color:#00d4ff; font-size:1.1em;">${data.ecu_identification.length}</strong></div>`;
+                var _ecuSeen = {};
                 data.ecu_identification.forEach(function(e){
                     var organe = (e && e.organe) ? e.organe : 'Calculateur';
-                    var addr = (e && e.addr) ? e.addr : '';
-                    html += `<div class="km-row"><span>${organe}</span><strong style="color:#00d4ff; font-family:monospace; font-size:0.9em;">${addr}</strong></div>`;
+                    if (_ecuSeen[organe]) return;   // dédoublonnage, jamais l'adresse hex au client
+                    _ecuSeen[organe] = true;
+                    html += `<div class="km-row"><span>${organe}</span></div>`;
                 });
                 html += '</div>';
             }
